@@ -26,6 +26,6 @@ README.md
 
 - Do NOT directly commit any code to the main branch.
 
-- Commit Messages: Write clear, concise commit messages that explain whether you [!Develop] certain feature or you are ![fixing] some issues and what have you changed. 
+- Commit Messages: Write clear, concise commit messages that explain whether you are **[developing]** certain feature or you are **[fixing]** some issues and what have you changed. 
 
 
