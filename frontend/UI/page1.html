@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical AI Chat</title>
+    <link rel="stylesheet" href="page1.css">
+</head>
+<body>
+
+<!-- Plugin Button to trigger chat -->
+<button id="openChatButton" class="plugin-button">AI Plugin</button>
+
+<div id="chatWindow" class="chat-window hidden">
+    <div class="chat-header">
+        <h3>How can I help you?</h3>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+    </div>
+    <div class="chat-input-area">
+        <input type="text" placeholder="Send messages to AI doctor" id="chatInput" />
+        <button id="sendButton" class="send-button">Submit</button>
+    </div>
+    <div class="chat-options">
+        <button id="notesButton" class="chat-option">Doctor's notes</button>
+        <button id="summaryButton" class="chat-option">Summary</button>
+        <button id="conditionButton" class="chat-option">Medical condition</button>
+    </div>    
+</div>
+
+<script src="page1.js"></script>
+</body>
+</html>
