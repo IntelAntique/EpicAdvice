@@ -1,11 +1,22 @@
 document.getElementById('openChatButton').addEventListener('click', function() {
     const chatWindow = document.getElementById('chatWindow');
+    const chatMessages = document.getElementById('chatMessages');
+
     if (chatWindow.classList.contains('hidden')) {
         chatWindow.classList.remove('hidden');
+
+        chatMessages.innerHTML = '';
+        const welcomeMessage = document.createElement('p');
+        welcomeMessage.textContent = "We are Epic Advice team.How can I help you? ";
+        welcomeMessage.classList.add('ai-message');
+        chatMessages.appendChild(welcomeMessage);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     } else {
         chatWindow.classList.add('hidden');
     }
 });
+
 
 function sendMessage() {
     const chatInput = document.getElementById('chatInput');
@@ -56,7 +67,7 @@ document.getElementById('notesButton').addEventListener('click', function() {
 document.getElementById('summaryButton').addEventListener('click', function() {
     openCenteredWindow('page2_summary.html');
 });
-document.getElementById('conditionButton').addEventListener('click', function() {
-    openCenteredWindow('page2_condition.html');
+document.getElementById('planButton').addEventListener('click', function() {
+    openCenteredWindow('page2_plan.html');
 });
 
