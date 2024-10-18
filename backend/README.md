@@ -18,4 +18,5 @@ Users Table
  - Careplan(xml)
  - FaimilyMemberHistory(xml)
  - MedicalHistory
- - Vaccination
+ - Allergy info
+ - Vaccination (To be determined)
