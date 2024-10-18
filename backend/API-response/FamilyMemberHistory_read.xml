@@ -1,0 +1,50 @@
+<FamilyMemberHistory xmlns="http://hl7.org/fhir">
+    <id value="ePM.Qux3IY3tsLDfCmpxnDhhUJ4WWDI.DRtTk-LVsHD03" />
+    <status value="completed" />
+    <patient>
+        <reference value="Patient/eV6Ofju2.rCOp6TCunVM9Rg3" />
+        <display value="Smith, Sally" />
+    </patient>
+    <date value="2021-07-05" />
+    <name value="Paula" />
+    <relationship>
+        <coding>
+            <system value="http://terminology.hl7.org/CodeSystem/v3-RoleCode" />
+            <code value="NMTH" />
+            <display value="Natural mother" />
+        </coding>
+        <coding>
+            <system value="urn:oid:1.2.840.114350.1.13.5325.1.7.10.698084.19350" />
+            <code value="1" />
+            <display value="Mother" />
+        </coding>
+    </relationship>
+    <sex>
+        <coding>
+            <system value="http://hl7.org/fhir/administrative-gender" />
+            <code value="female" />
+        </coding>
+    </sex>
+    <bornDate value="1968-07-05" />
+    <deceasedBoolean value="false" />
+    <note>
+        <text value="Estranged" />
+    </note>
+    <condition>
+        <code>
+            <coding>
+                <system value="http://snomed.info/sct" />
+                <code value="160266009" />
+                <display value="No family history of" />
+            </coding>
+            <coding>
+                <system value="urn:oid:1.2.840.114350.1.13.5325.1.7.10.698084.19360" />
+                <code value="1702" />
+                <display value="Healthy" />
+            </coding>
+        </code>
+        <note>
+            <text value="Mother is healthy" />
+        </note>
+    </condition>
+</FamilyMemberHistory>
