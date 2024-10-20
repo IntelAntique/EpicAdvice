@@ -12,14 +12,9 @@
   },
   "content_scripts": [
     {
-<<<<<<< Updated upstream
-      "matches": ["<all_urls>"],
-      "js": ["scripts/content.js"]
-=======
       "matches": ["https://www.bilibili.com/*"], //The plugin is only shown on the site bilibili
       "js": ["scripts/content.js"],
       "css": ["scripts/page1.css"]
->>>>>>> Stashed changes
     }
   ]
 }
