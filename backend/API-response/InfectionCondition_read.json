@@ -1,0 +1,49 @@
+{
+    "resourceType": "Condition",
+    "id": "ePMnpp6lhpta6YiS9-QsmBA3",
+    "clinicalStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "version": "4.0.0",
+          "code": "active",
+          "display": "Active"
+        }
+      ],
+      "text": "Active"
+    },
+    "category": [
+      {
+        "coding": [
+          {
+            "system": "http://open.epic.com/FHIR/StructureDefinition/condition-category",
+            "code": "infection",
+            "display": "Infection"
+          }
+        ],
+        "text": "Infection"
+      }
+    ],
+    "code": {
+      "coding": [
+        {
+          "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.4.698084.10375",
+          "code": "9",
+          "display": "Measles"
+        },
+        {
+          "system": "http://snomed.info/sct",
+          "code": "14189004",
+          "display": "Measles"
+        }
+      ],
+      "text": "Measles"
+    },
+    "subject": {
+      "reference": "Patient/eC4MDFhhJAHRxZCUXt6ozHA3",
+      "display": "Dunwoody, Terence"
+    },
+    "onsetDateTime": "2021-02-12",
+    "recordedDate": "2021-02-19T20:39:13Z"
+  }
+  
