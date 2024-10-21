@@ -1,0 +1,64 @@
+{
+    "resourceType": "FamilyMemberHistory",
+    "id": "ePM.Qux3IY3tsLDfCmpxnDhhUJ4WWDI.DRtTk-LVsHD03",
+    "status": "completed",
+    "patient": {
+      "reference": "Patient/eV6Ofju2.rCOp6TCunVM9Rg3",
+      "display": "Smith, Sally"
+    },
+    "date": "2021-07-05",
+    "name": "Paula",
+    "relationship": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+          "code": "NMTH",
+          "display": "Natural mother"
+        },
+        {
+          "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.10.698084.19350",
+          "code": "1",
+          "display": "Mother"
+        }
+      ]
+    },
+    "sex": {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/administrative-gender",
+          "code": "female"
+        }
+      ]
+    },
+    "bornDate": "1968-07-05",
+    "deceasedBoolean": false,
+    "note": [
+      {
+        "text": "Estranged"
+      }
+    ],
+    "condition": [
+      {
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "160266009",
+              "display": "No family history of"
+            },
+            {
+              "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.10.698084.19360",
+              "code": "1702",
+              "display": "Healthy"
+            }
+          ]
+        },
+        "note": [
+          {
+            "text": "Mother is healthy"
+          }
+        ]
+      }
+    ]
+  }
+  

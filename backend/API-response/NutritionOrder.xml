@@ -1,0 +1,51 @@
+Bundle xmlns="http://hl7.org/fhir">
+         <type value="searchset" />
+         <total value="1" />
+         <link>
+                 <relation value="self" />
+                 <url value="https://hostname/instance/api/FHIR/R4/NutritionOrder?patient=eFLQ4DCYc6n424WRext9mTQ3" />
+         </link>
+         <entry>
+                 <link>
+                          <relation value="self" />
+                          <url value="https://hostname/instance/api/FHIR/R4/NutritionOrder/emV2M.3TKuBneTxDOPf2VYUgryLaXH6Qus6BUOZ8Tg9k3" />
+                 </link>
+                 <fullUrl value="https://hostname/instance/api/FHIR/R4/NutritionOrder/emV2M.3TKuBneTxDOPf2VYUgryLaXH6Qus6BUOZ8Tg9k3" />
+                 <resource>
+                          <NutritionOrder>
+                                   <id value="emV2M.3TKuBneTxDOPf2VYUgryLaXH6Qus6BUOZ8Tg9k3" />
+                                   <status value="active" />
+                <intent value="order" />
+                                   <patient>
+                                            <reference value="eFLQ4DCYc6n424WRext9mTQ3" />
+                                            <display value="Patient, Epic" />
+                                   </patient>
+                                   <dateTime value="2021-07-01T19:42:38Z" />
+                                   <oralDiet>
+                                            <type>
+                                                    <coding>
+                                                             <system value="urn:oid:1.2.840.114350.1.13.861.1.7.10.798268.34365" />
+                                                             <code value="3" />
+                                                             <display value="Vegetarian" />
+                                                    </coding>
+                                                    <text value="Vegetarian" />
+                                            </type>
+                                            <texture>
+                                                    <modifier>
+                                                             <coding>
+                                                                      <system value="urn:oid:1.2.840.114350.1.13.861.1.7.10.798268.34442" />
+                                                                      <code value="8" />
+                                                                      <display value="Pureed" />
+                                                             </coding>
+                                                             <text value="Pureed" />
+                                                    </modifier>
+                                            </texture>
+                                            <instruction value="GENERAL DIET PLAN" />
+                                   </oralDiet>
+                          </NutritionOrder>
+                 </resource>
+                 <search>
+                          <mode value="match" />
+                 </search>
+         </entry>
+</Bundle>

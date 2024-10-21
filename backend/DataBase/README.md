@@ -14,9 +14,15 @@ Users Table
  - LastName
  - Email
  - Age
+ - Ethnicity
+ - Region
+ - Diet Pattern
  - Gender
+ - Occupation
  - Careplan(xml)
- - FaimilyMemberHistory(xml)
+ - FaimilyMemberHistory
  - MedicalHistory
  - Allergy info
  - Vaccination (To be determined)
+
+ Note thet the Ethnicity attribute follows coding systems [HL7](https://terminology.hl7.org/CodeSystem-v3-Ethnicity.html) standard, and Occupation attribute follows SNOMED coding
