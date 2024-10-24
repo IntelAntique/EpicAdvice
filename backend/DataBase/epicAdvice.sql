@@ -4,7 +4,7 @@ CREATE TABLE Users (
     LastName VARCHAR(50) NOT NULL,
     Email VARCHAR(100) NOT NULL UNIQUE,
     Age INT,
-    Gender ENUM('Male', 'Female', 'Other'),
+    Gender TEXT,
     AccountInfo TEXT, 
     AllergyInfo TEXT,                      
     AppointmentInfo TEXT,                  
@@ -16,7 +16,6 @@ CREATE TABLE Users (
     Nutrition TEXT,                        
     ActivityLevel TEXT,                    
     Occupation TEXT,                      
-    UserAddress TEXT      
-    Careplan TEXT,
+    UserAddress TEXT     
     --Vaccination TEXT(to be created)
 );
