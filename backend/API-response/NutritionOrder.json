@@ -2,21 +2,9 @@
   "resourceType": "Bundle",
   "type": "searchset",
   "total": 1,
-  "link": [
-    {
-      "relation": "self",
-      "url": "https://hostname/instance/api/FHIR/R4/NutritionOrder?patient=eFLQ4DCYc6n424WRext9mTQ3"
-    }
-  ],
   "entry": [
     {
-      "link": [
-        {
-          "relation": "self",
-          "url": "https://hostname/instance/api/FHIR/R4/NutritionOrder/emV2M.3TKuBneTxDOPf2VYUgryLaXH6Qus6BUOZ8Tg9k3"
-        }
-      ],
-      "fullUrl": "https://hostname/instance/api/FHIR/R4/NutritionOrder/emV2M.3TKuBneTxDOPf2VYUgryLaXH6Qus6BUOZ8Tg9k3",
+      
       "resource": {
         "resourceType": "NutritionOrder",
         "id": "emV2M.3TKuBneTxDOPf2VYUgryLaXH6Qus6BUOZ8Tg9k3",
@@ -32,7 +20,6 @@
             {
               "coding": [
                 {
-                  "system": "urn:oid:1.2.840.114350.1.13.861.1.7.10.798268.34365",
                   "code": "3",
                   "display": "Vegetarian"
                 }
@@ -45,7 +32,6 @@
               "modifier": {
                 "coding": [
                   {
-                    "system": "urn:oid:1.2.840.114350.1.13.861.1.7.10.798268.34442",
                     "code": "8",
                     "display": "Pureed"
                   }

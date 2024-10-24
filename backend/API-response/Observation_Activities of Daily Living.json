@@ -6,7 +6,6 @@
         {
             "coding": [
                 {
-                    "system": "http://open.epic.com/FHIR/StructureDefinition/observation-category",
                     "code": "functional-mental-status",
                     "display": "Functional and Mental Status"
                 }
@@ -35,7 +34,6 @@
         "text": "Body Movement in Desired Range"
     },
     "subject": {
-        "reference": "Patient/enoCp373txQSghUte78RDIQ3",
         "display": "FHIR, Automation"
     },
     "effectivePeriod": {

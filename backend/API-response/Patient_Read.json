@@ -3,7 +3,6 @@
     "id": "eMMKGfU7AJS5yjSRNjZdLxA3",
     "extension": [
       {
-        "url": "http://open.epic.com/FHIR/STU3/StructureDefinition/patient-preferred-provider-language",
         "valueCodeableConcept": {
           "coding": [
             {
@@ -15,70 +14,43 @@
         }
       },
       {
-        "url": "http://open.epic.com/FHIR/STU3/StructureDefinition/patient-preferred-provider-sex",
         "valueCode": "F"
       },
       {
-        "url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
         "valueString": "xxx-xx-7418"
       },
       {
-        "url": "http://open.epic.com/FHIR/StructureDefinition/extension/legal-sex",
         "valueCodeableConcept": {
           "coding": [
             {
-              "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.10.698084.130.657370.1287",
               "code": "female"
             }
           ]
         }
       },
       {
-        "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
         "valueCodeableConcept": {
           "coding": [
             {
-              "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.10.698084.131.657370.1194",
               "code": "female"
             }
           ]
         }
       },
       {
-        "url": "http://open.epic.com/FHIR/StructureDefinition/extension/sex-for-clinical-use",
         "valueCodeableConcept": {
           "coding": [
             {
-              "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.10.698084.130.657370.1287",
               "code": "female"
             }
           ]
         }
       },
       {
-        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
         "valueCode": "F"
       }
     ],
-    "identifier": [
-      {
-        "use": "usual",
-        "type": {
-          "text": "EPI"
-        },
-        "system": "urn:oid:1.2.840.114350",
-        "value": "248951"
-      },
-      {
-        "use": "usual",
-        "system": "urn:oid:1.2.840.114350.1.13.861.1.7.5.737384.4399",
-        "value": "21890"
-      },
-      {
-        "use": "usual",
-        "system": "urn:oid:2.16.840.1.113883.4.1"
-      }
-    ],
+    
     "active": true,
     "name": [
       {
@@ -121,7 +93,6 @@
     "maritalStatus": {
       "coding": [
         {
-          "system": "http://hl7.org/fhir/V3/MaritalStatus",
           "code": "M",
           "display": "Married"
         }
@@ -130,7 +101,6 @@
     },
     "generalPractitioner": [
       {
-        "reference": "https://hostname/instance/api/FHIR/STU3/Practitioner/efv90i4pFs9fOm7QQhHOUHw3",
         "display": "Amber Hxl, MD"
       }
     ]
