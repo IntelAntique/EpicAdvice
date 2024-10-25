@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import json
+from datetime import datetime 
 
 sql_file_path = './epicAdvice.sql'
 db_path = './epicAdvice.db'
@@ -13,6 +14,12 @@ def execute_sql_file(sql_file, conn):
     conn.executescript(sql_script)
     print("Database created and initialized successfully.")
 
+def calculate_age(birth_date):
+    birth_date = datetime.strptime(birth_date, "%Y-%m-%d")
+    today = datetime.today()
+    return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+
+
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
@@ -23,6 +30,7 @@ json_dir = '../API-response/'
 
 if not table_exists:
     execute_sql_file(sql_file_path, conn)
+
 
 def insert_json_data(json_file, column_name):
     with open(json_file, 'r') as f:
@@ -35,21 +43,25 @@ def insert_json_data(json_file, column_name):
     cursor.execute(f"UPDATE Users SET {column_name} = ? WHERE id = ?", (json_string, user_id))
     conn.commit()
 
-def extract_and_insert_email(json_file, column_name='Email'):
+def extract_and_insert_details(json_file):
     with open(json_file, 'r') as f:
         json_data = json.load(f)
     
-    # Look for the email address in the 'telecom' field
-    for telecom in json_data.get("telecom", []):
-        if telecom.get("system") == "email":
-            email = telecom.get("value")
-            if email:
-                # Insert the email into the database
-                cursor.execute(f"UPDATE Users SET {column_name} = ? WHERE id = ?", (email, user_id))
-                conn.commit()
-                print(f"Email {email} inserted into column {column_name}.")
-                return
-    print(f"No email found in {json_file}")
+    email = next((item["value"] for item in json_data.get("telecom", []) if item.get("system") == "email"), None)
+    
+    first_name = json_data.get("name", [{}])[0].get("given", [""])[0]
+    last_name = json_data.get("name", [{}])[0].get("family", "")
+    
+    birth_date = json_data.get("birthDate")
+    age = calculate_age(birth_date) if birth_date else None
+    
+    # Insert extracted data into the database
+    cursor.execute("""
+        UPDATE Users
+        SET Email = ?, FirstName = ?, LastName = ?, Age = ?
+        WHERE id = ?
+    """, (email, first_name, last_name, age, user_id))
+    conn.commit()
 
 
 # Map JSON files to corresponding columns in the database
@@ -65,7 +77,7 @@ json_files_mapping = {
     'NutritionOrder.json': 'Nutrition',
     'Observation_Activities of Daily Living.json': 'ActivityLevel',
     'Occupation.json': 'Occupation',
-    'Patient_Read.json': 'Address',
+    'Patient_Read.json': 'UserAddress',
 }
 
 # Loop through the JSON files and insert data into the corresponding database columns
@@ -77,11 +89,11 @@ for json_file, column_name in json_files_mapping.items():
         print(f"File {json_file} does not exist in the directory.")
 
 # Insert the email specifically from the Patient_Read.json file
-patient_json = os.path.join(json_dir, 'Patient_Read.json')
-if os.path.exists(patient_json):
-    extract_and_insert_email(patient_json)
-else:
-    print(f"File Patient_Read.json does not exist in the directory.")
+# patient_json = os.path.join(json_dir, 'Patient_Read.json')
+# if os.path.exists(patient_json):
+#     extract_and_insert_details(patient_json)
+# else:
+#     print(f"File Patient_Read.json does not exist in the directory.")
 
 
 conn.close()
