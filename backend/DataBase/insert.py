@@ -55,14 +55,15 @@ def extract_and_insert_details(json_file):
     last_name = json_data.get("name", [{}])[0].get("family", "")
     
     birth_date = json_data.get("birthDate")
+    gender = json_data.get("gender")
     age = calculate_age(birth_date) if birth_date else None
     
-    # Insert extracted data into the database
+
     cursor.execute("""
         UPDATE Users
-        SET Email = ?, FirstName = ?, LastName = ?, Age = ?
+        SET Email = ?, FirstName = ?, LastName = ?, Age = ?, Gender = ?
         WHERE id = ?
-    """, (email, first_name, last_name, age, user_id))
+    """, (email, first_name, last_name, age,  gender, user_id))
     conn.commit()
 
 

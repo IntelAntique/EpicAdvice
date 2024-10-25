@@ -17,5 +17,4 @@ CREATE TABLE Users (
     ActivityLevel TEXT,                    
     Occupation TEXT,                      
     Address TEXT     
-    --Vaccination TEXT(to be created)
 );
