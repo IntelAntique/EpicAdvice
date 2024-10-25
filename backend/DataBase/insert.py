@@ -10,7 +10,6 @@ def execute_sql_file(sql_file, conn):
     with open(sql_file, 'r') as file:
         sql_script = file.read()
 
-    # Execute the SQL commands in the file
     conn.executescript(sql_script)
     print("Database created and initialized successfully.")
 
@@ -30,6 +29,9 @@ json_dir = '../API-response/'
 
 if not table_exists:
     execute_sql_file(sql_file_path, conn)
+    cursor.execute("INSERT INTO Users (id, FirstName, LastName, Email) VALUES (?, ?, ?, ?);", 
+                   (1,'', '', 'placeholder@example.com'))
+    conn.commit()
 
 
 def insert_json_data(json_file, column_name):
@@ -64,7 +66,6 @@ def extract_and_insert_details(json_file):
     conn.commit()
 
 
-# Map JSON files to corresponding columns in the database
 json_files_mapping = {
     'Billing_Info.json': 'AccountInfo',
     'AllergyIntolerance_read.json': 'AllergyInfo',
@@ -77,7 +78,7 @@ json_files_mapping = {
     'NutritionOrder.json': 'Nutrition',
     'Observation_Activities of Daily Living.json': 'ActivityLevel',
     'Occupation.json': 'Occupation',
-    'Patient_Read.json': 'UserAddress',
+    'Patient_Read.json': 'Address',
 }
 
 # Loop through the JSON files and insert data into the corresponding database columns
@@ -88,12 +89,13 @@ for json_file, column_name in json_files_mapping.items():
     else:
         print(f"File {json_file} does not exist in the directory.")
 
-# Insert the email specifically from the Patient_Read.json file
-# patient_json = os.path.join(json_dir, 'Patient_Read.json')
-# if os.path.exists(patient_json):
-#     extract_and_insert_details(patient_json)
-# else:
-#     print(f"File Patient_Read.json does not exist in the directory.")
+
+#Insert the email specifically from the Patient_Read.json file
+patient_json = os.path.join(json_dir, 'Patient_Read.json')
+if os.path.exists(patient_json):
+    extract_and_insert_details(patient_json)
+else:
+    print(f"File Patient_Read.json does not exist in the directory.")
 
 
 conn.close()

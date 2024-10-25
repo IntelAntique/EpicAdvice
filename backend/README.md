@@ -36,6 +36,8 @@ Users Table
 
  ### Get Started 
  navigate to `backend/DataBase` directory
+ 
  Run: 
  `sqlite3 epicAdvice.db`
  `SELECT * FROM Users WHERE id = 1;`
+ `SELECT FirstName, LastName, Email, Age, Gender FROM Users;`
