@@ -149,3 +149,15 @@
 .card p, .card ul {
     margin: 5px 0;
 }
+
+.open-chat {
+    background: none; /* 使按钮没有默认背景 */
+    border: none; /* 去掉边框 */
+    padding: 0; /* 去掉按钮内边距 */
+    cursor: pointer; /* 鼠标移动到按钮上时显示为手型 */
+}
+
+.chat-icon {
+    width: 50px; /* 图片的宽度，你可以根据需要调整 */
+    height: 50px; /* 图片的高度，你可以根据需要调整 */
+}
