@@ -197,30 +197,52 @@ document.getElementById('chatInput').addEventListener('keypress', function(e) {
     }
 });
 
+//most important func!!! do not update!!!
 function sendMessage() {
     const chatInput = document.getElementById('chatInput');
     const chatMessages = document.getElementById('chatMessages');
     const message = chatInput.value.trim();
+
     if (message !== '') {
-        const newMessage = document.createElement('p');
-        newMessage.textContent = message;
-        newMessage.classList.add('user-message');
-        chatMessages.appendChild(newMessage);
+        const userMessage = document.createElement('p');
+        userMessage.textContent = message;
+        userMessage.classList.add('user-message');
+        chatMessages.appendChild(userMessage);
         chatInput.value = '';
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        setTimeout(sendAIMessage, 1000);
+
+        fetch('http://127.0.0.1:5000/get_response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_input: message }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const aiResponse = data.response;
+            const aiMessage = document.createElement('p');
+            aiMessage.textContent = aiResponse;
+            aiMessage.classList.add('ai-message');
+            chatMessages.appendChild(aiMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const errorMessage = document.createElement('p');
+            errorMessage.textContent = "There was an error. Please try again.";
+            errorMessage.classList.add('error-message');
+            chatMessages.appendChild(errorMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
     }
 }
 
-function sendAIMessage() {
-    const chatMessages = document.getElementById('chatMessages');
-    const aiResponse = "AI messages";
-    const newMessage = document.createElement('p');
-    newMessage.textContent = aiResponse;
-    newMessage.classList.add('ai-message');
-    chatMessages.appendChild(newMessage);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
 
 // Function to open modal and display content
 function openModal(content) {
