@@ -35,10 +35,26 @@ def insert_json_data(json_file, column_name):
     cursor.execute(f"UPDATE Users SET {column_name} = ? WHERE id = ?", (json_string, user_id))
     conn.commit()
 
+def extract_and_insert_email(json_file, column_name='Email'):
+    with open(json_file, 'r') as f:
+        json_data = json.load(f)
+    
+    # Look for the email address in the 'telecom' field
+    for telecom in json_data.get("telecom", []):
+        if telecom.get("system") == "email":
+            email = telecom.get("value")
+            if email:
+                # Insert the email into the database
+                cursor.execute(f"UPDATE Users SET {column_name} = ? WHERE id = ?", (email, user_id))
+                conn.commit()
+                print(f"Email {email} inserted into column {column_name}.")
+                return
+    print(f"No email found in {json_file}")
+
 
 # Map JSON files to corresponding columns in the database
 json_files_mapping = {
-    'Account_read.json': 'AccountInfo',
+    'Billing_Info.json': 'AccountInfo',
     'AllergyIntolerance_read.json': 'AllergyInfo',
     'Appointment_read.json': 'AppointmentInfo',
     'BodyStructure_search.json': 'BodyStructure',
@@ -49,7 +65,7 @@ json_files_mapping = {
     'NutritionOrder.json': 'Nutrition',
     'Observation_Activities of Daily Living.json': 'ActivityLevel',
     'Occupation.json': 'Occupation',
-    'Patient_Read.json': 'UserAddress',
+    'Patient_Read.json': 'Address',
 }
 
 # Loop through the JSON files and insert data into the corresponding database columns
@@ -60,5 +76,12 @@ for json_file, column_name in json_files_mapping.items():
     else:
         print(f"File {json_file} does not exist in the directory.")
 
-# Close the database connection
+# Insert the email specifically from the Patient_Read.json file
+patient_json = os.path.join(json_dir, 'Patient_Read.json')
+if os.path.exists(patient_json):
+    extract_and_insert_email(patient_json)
+else:
+    print(f"File Patient_Read.json does not exist in the directory.")
+
+
 conn.close()

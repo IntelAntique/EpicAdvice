@@ -20,9 +20,6 @@ Users Table
  - AllergyInfo
  - AppointmentInfo
  - BodyStructure     
- - Region
- - Gender
- - Occupation
  - Careplan
  - FaimilyMemberHistory
  - InfectionCondition
@@ -30,8 +27,7 @@ Users Table
  - Nutrition(Diet Pattern)
  - ActivityLevel 
  - Occupation                  
- - UserAddress
- - Vaccination (To be determined)                                
+ - Address                           
                                                           
                        
        
