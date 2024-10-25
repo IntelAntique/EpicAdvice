@@ -16,6 +16,17 @@
       "js": ["scripts/content.js"],
       "css": ["scripts/page1.css"]
     }
+  ],
+  "icons": {
+    "16": "images/AIPhoto.png",
+    "48": "images/AIPhoto.png",
+    "128": "images/AIPhoto.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["images/AIPhoto.png"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
 

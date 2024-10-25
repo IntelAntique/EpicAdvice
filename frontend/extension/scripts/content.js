@@ -12,19 +12,23 @@ console.log("CSS file loaded from:", linkElement.href);
 const chatWidget = document.createElement('div');
 chatWidget.innerHTML = `
     <div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
-        <button id="open-chat" class="plugin-button">Chat</button>
+        <button id="open-chat" class="open-chat" style="position: relative;">
+            <div id="hover-text" class="hover-text" style="display: none; position: absolute; top: -34px; left: 50%; transform: translateX(-50%); background: #4a90e2; padding: 10px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); font-size: 19px; color: white; white-space: nowrap; width: auto; max-width: 300px; text-align: center;">I'm Vita, your health guide</div>
+            <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="Chat" id="chat-icon" class="chat-icon" />
+        </button>
 
-        <div id="chatWindow" class="chat-window hidden" style="display: none;">
+        <div id="chatWindow" class="chat-window hidden" style="display: none; flex-direction: column;">
             <div class="chat-header">
                 <h3>Epic Advice</h3>
+                <button id="close-chat" class="close-chat-button">Close</button>
             </div>
-            <div class="chat-messages" id="chatMessages">
+            <div class="chat-messages" id="chatMessages" style="flex: 1; overflow-y: auto; padding: 10px;">
             </div>
-            <div class="chat-input-area">
+            <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box;">
                 <input type="text" placeholder="Send messages to AI doctor" id="chatInput" />
                 <button id="sendButton" class="send-button">Submit</button>
             </div>
-            <div class="chat-options">
+            <div class="chat-options" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; justify-content: space-around;">
                 <button id="notesButton" class="chat-option">Doctor's notes</button>
                 <button id="summaryButton" class="chat-option">Summary</button>
                 <button id="planButton" class="chat-option">Current Plan</button>
@@ -41,7 +45,6 @@ chatWidget.innerHTML = `
 `;
 document.body.appendChild(chatWidget);
 
-// Modal CSS styles (you can move this to your CSS file)
 const style = document.createElement('style');
 style.innerHTML = `
 .modal {
@@ -79,6 +82,85 @@ style.innerHTML = `
     text-decoration: none;
     cursor: pointer;
 }
+
+.close-chat-button {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 18px;
+    cursor: pointer;
+}
+.close-chat-button:hover {
+    color: black;
+}
+
+.chat-icon {
+    width: 200px;
+    height: 200px;
+}
+
+.hover-text {
+    font-family: Arial, sans-serif;
+    color: #333;
+    position: relative;
+    background: #4a90e2;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-size: 12px;
+    white-space: nowrap;
+    width: auto;
+    max-width: 300px;
+    text-align: center;
+}
+
+.chat-window {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    height: 600px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+}
+
+.chat-input-area input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.send-button {
+    margin-left: 10px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.send-button:hover {
+    background-color: #45a049;
+}
+
+.chat-options button {
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chat-options button:hover {
+    background-color: #e1e1e1;
+}
 `;
 document.head.appendChild(style);
 
@@ -86,21 +168,27 @@ document.head.appendChild(style);
 document.getElementById('open-chat').addEventListener('click', function() {
     const chatWindow = document.getElementById('chatWindow');
     const chatMessages = document.getElementById('chatMessages');
-    
+    const chatIcon = document.getElementById('chat-icon');
 
     if (chatWindow.style.display === 'none') {
-        chatWindow.style.display = 'block';
+        chatWindow.style.display = 'flex';
+        chatIcon.style.display = 'none';
         chatMessages.innerHTML = '';
         const welcomeMessage = document.createElement('p');
         welcomeMessage.textContent = "We are Epic Advice team. How can I help you?";
         welcomeMessage.classList.add('ai-message');
         chatMessages.appendChild(welcomeMessage);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    } else {
-        chatWindow.style.display = 'none';
     }
 });
 
+document.getElementById('close-chat').addEventListener('click', function() {
+    const chatWindow = document.getElementById('chatWindow');
+    const chatIcon = document.getElementById('chat-icon');
+
+    chatWindow.style.display = 'none';
+    chatIcon.style.display = 'block';
+});
 
 document.getElementById('sendButton').addEventListener('click', sendMessage);
 document.getElementById('chatInput').addEventListener('keypress', function(e) {
@@ -179,4 +267,14 @@ window.addEventListener('click', function(event) {
     if (event.target === modal) {
         modal.style.display = 'none';
     }
+});
+
+// Show hover text when mouse enters the chat icon area
+document.getElementById('chat-icon').addEventListener('mouseenter', function() {
+    document.getElementById('hover-text').style.display = 'block';
+});
+
+// Hide hover text when mouse leaves the chat icon area
+document.getElementById('chat-icon').addEventListener('mouseleave', function() {
+    document.getElementById('hover-text').style.display = 'none';
 });
