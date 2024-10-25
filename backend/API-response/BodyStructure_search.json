@@ -1,0 +1,139 @@
+{
+
+    "resourceType": "Bundle",
+
+    "type": "searchset",
+
+    "total": 1,
+
+    "link": [
+
+        {
+
+            "relation": "self",
+
+            "url": "https://hostname/instance/api/FHIR/R4/BodyStructure?morphology=organs&patient=eRKAMfSfGUZ1HFGl2QGrHlQ3&location=http://snomed.info/sct%7C18639004"
+
+        }
+
+    ],
+
+    "entry": [
+
+        {
+
+            "link": [
+
+                {
+
+                    "relation": "self",
+
+                    "url": "https://hostname/instance/api/FHIR/R4/BodyStructure/eB962RufIdue04nYAGf1HNCIl7CI54FFqvZpawIRgp.S1YsihI9sXlVyxh.iAXl0D3"
+
+                }
+
+            ],
+
+            "fullUrl": "https://hostname/instance/api/FHIR/R4/BodyStructure/eB962RufIdue04nYAGf1HNCIl7CI54FFqvZpawIRgp.S1YsihI9sXlVyxh.iAXl0D3",
+
+            "resource": {
+
+                "resourceType": "BodyStructure",
+
+                "id": "eB962RufIdue04nYAGf1HNCIl7CI54FFqvZpawIRgp.S1YsihI9sXlVyxh.iAXl0D3",
+
+                "extension": [
+
+                    {
+
+                        "valueCodeableConcept": {
+
+                            "coding": [
+
+                                {
+
+                                    "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.10.798271.415",
+
+                                    "code": "4",
+
+                                    "display": "Transplanted"
+
+                                }
+
+                            ],
+
+                            "text": "Transplanted"
+
+                        },
+
+                        "url": "http://open.epic.com/FHIR/StructureDefinition/extension/organ-status"
+
+                    }
+
+                ],
+
+                "active": true,
+
+                "morphology": {
+
+                    "coding": [
+
+                        {
+
+                            "system": "urn:oid:2.16.840.1.113883.6.96",
+
+                            "code": "280115004",
+
+                            "display": "Acquired body structure (body structure)"
+
+                        }
+
+                    ],
+
+                    "text": "Acquired body structure (body structure)"
+
+                },
+
+                "location": {
+
+                    "coding": [
+
+                        {
+
+                            "system": "urn:oid:2.16.840.1.113883.6.96",
+
+                            "code": "18639004",
+
+                            "display": "Left kidney structure (body structure)"
+
+                        }
+
+                    ],
+
+                    "text": "Left kidney structure (body structure)"
+
+                },
+
+                "description": "Left Kidney",
+
+                "patient": {
+
+                    "reference": "Patient/eRKAMfSfGUZ1HFGl2QGrHlQ3",
+
+                    "display": "Test, Patient"
+
+                }
+
+            },
+
+            "search": {
+
+                "mode": "match"
+
+            }
+
+        }
+
+    ]
+
+}

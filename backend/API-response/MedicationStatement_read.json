@@ -1,0 +1,365 @@
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "total": 5,
+    "link": [{
+    "relation": "self",
+    "url": "https://hostname/instance/api/FHIR/STU3/MedicationStatement?Patient=eFKsVr2y75R9CKzJKJ37wMg3&status=active"
+    }],
+    "entry": [{
+    "link": [{
+    "relation": "self",
+    "url": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/eDbMrWBI0seji4oPY6tVc3cwkkwXSAwjaLb4KmARROyQ3"
+    }],
+    "fullUrl": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/eDbMrWBI0seji4oPY6tVc3cwkkwXSAwjaLb4KmARROyQ3",
+    "resource": {
+    "resourceType": "MedicationStatement",
+    "id": "eDbMrWBI0seji4oPY6tVc3cwkkwXSAwjaLb4KmARROyQ3",
+    "identifier": [{
+    "use": "usual",
+    "system": "1.2.840.114350.1.13.861.1.7.2.798268",
+    "value": "5131734"
+    }],
+    "status": "active",
+    "category": {
+    "coding": [{
+    "code": "inpatient",
+    "display": "Inpatient"
+    }],
+    "text": "Inpatient"
+    },
+    "medicationReference": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Medication/eq7Ib9QN5yAnUEPPN2tO1Av9b19DdLZPqjbyljiwwahKrtkKZtRVhx2OrRjD7EkrJ3",
+    "display": "Ibuprofen suspension 40 mg"
+    },
+    "effectivePeriod": {
+    "start": "2017-04-26T22:00:00Z"
+    },
+    "informationSource": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Practitioner/egCj4Z7EG1mplI4xYrONFRQ3",
+    "display": "PROVIDER, TESTING"
+    },
+    "subject": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Patient/eFKsVr2y75R9CKzJKJ37wMg3",
+    "display": "Friend, All"
+    },
+    "taken": "unk",
+    "dosage": [{
+    "timing": {
+    "repeat": {
+    "boundsPeriod": {
+    "start": "2017-04-26T22:00:00Z"
+    },
+    "timeOfDay": ["12:00:00",
+    "18:00:00"]
+    }
+    },
+    "asNeededBoolean": false,
+    "route": {
+    "coding": [{
+    "system": "http://snomed.info/sct",
+    "code": "260548002",
+    "display": "Oral"
+    }],
+    "text": "Oral"
+    },
+    "doseQuantity": {
+    "value": "1",
+    "unit": "mL",
+    "system": "http://unitsofmeasure.org",
+    "code": "mL"
+    }
+    }]
+    },
+    "search": {
+    "mode": "match"
+    }
+    },
+    {
+    "link": [{
+    "relation": "self",
+    "url": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/eEASvhwEUGbDMlc9TczAf4kl6WH7pDd-2DnM9OPaH.S03"
+    }],
+    "fullUrl": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/eEASvhwEUGbDMlc9TczAf4kl6WH7pDd-2DnM9OPaH.S03",
+    "resource": {
+    "resourceType": "MedicationStatement",
+    "id": "eEASvhwEUGbDMlc9TczAf4kl6WH7pDd-2DnM9OPaH.S03",
+    "identifier": [{
+    "use": "usual",
+    "system": "1.2.840.114350.1.13.861.1.7.2.798268",
+    "value": "3742732"
+    }],
+    "status": "active",
+    "category": {
+    "coding": [{
+    "code": "community",
+    "display": "Community"
+    }],
+    "text": "Community"
+    },
+    "medicationReference": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Medication/elVSyIL1NHgTI4rA2wQ15IsdLLE11JPFlsWmvO.nSF3c3",
+    "display": "atorvastatin 10 MG PO tablet"
+    },
+    "effectivePeriod": {
+    "start": "2016-09-14"
+    },
+    "dateAsserted": "2016-09-14",
+    "informationSource": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Practitioner/egCj4Z7EG1mplI4xYrONFRQ3",
+    "display": "PROVIDER, TESTING"
+    },
+    "subject": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Patient/eFKsVr2y75R9CKzJKJ37wMg3",
+    "display": "Friend, All"
+    },
+    "taken": "unk",
+    "dosage": [{
+    "text": "Sig:Take ONE tablet by mouth daily",
+    "patientInstruction": "Sig:Take ONE tablet by mouth daily",
+    "timing": {
+    "repeat": {
+    "boundsPeriod": {
+    "start": "2016-09-14"
+    },
+    "timeOfDay": ["06:00:00"]
+    }
+    },
+    "asNeededBoolean": false,
+    "route": {
+    "coding": [{
+    "system": "http://snomed.info/sct",
+    "code": "260548002",
+    "display": "Oral"
+    }],
+    "text": "Oral"
+    },
+    "method": {
+    "coding": [{
+    "system": "http://snomed.info/sct",
+    "code": "419652001",
+    "display": "Take"
+    }],
+    "text": "Take"
+    },
+    "doseQuantity": {
+    "value": "1",
+    "unit": "tablet",
+    "system": "http://unitsofmeasure.org",
+    "code": "{tbl}"
+    }
+    }]
+    },
+    "search": {
+    "mode": "match"
+    }
+    },
+    {
+    "link": [{
+    "relation": "self",
+    "url": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/esRa10.bd.h9cjFZTNrBr2hSIjx-jSPdooz1JQBh9U903"
+    }],
+    "fullUrl": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/esRa10.bd.h9cjFZTNrBr2hSIjx-jSPdooz1JQBh9U903",
+    "resource": {
+    "resourceType": "MedicationStatement",
+    "id": "esRa10.bd.h9cjFZTNrBr2hSIjx-jSPdooz1JQBh9U903",
+    "identifier": [{
+    "use": "usual",
+    "system": "1.2.840.114350.1.13.861.1.7.2.798268",
+    "value": "3742751"
+    }],
+    "status": "active",
+    "category": {
+    "coding": [{
+    "code": "outpatient",
+    "display": "Outpatient"
+    }],
+    "text": "Outpatient"
+    },
+    "medicationReference": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Medication/e.7iv-v2e9AOBH07TAX-Rh4RW6cksFmCXOdikAzYOEcg3",
+    "display": "ibuprofen (MOTRIN) tablet 400 mg"
+    },
+    "effectivePeriod": {
+    "start": "2017-04-06T02:03:44Z"
+    },
+    "informationSource": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Practitioner/egCj4Z7EG1mplI4xYrONFRQ3",
+    "display": "PROVIDER, TESTING"
+    },
+    "subject": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Patient/eFKsVr2y75R9CKzJKJ37wMg3",
+    "display": "Friend, All"
+    },
+    "taken": "unk",
+    "dosage": [{
+    "timing": {
+    "repeat": {
+    "boundsPeriod": {
+    "start": "2017-04-06T02:03:44Z"
+    },
+    "frequency": 1,
+    "period": "6",
+    "periodUnit": "Hour"
+    }
+    },
+    "asNeededBoolean": true,
+    "route": {
+    "coding": [{
+    "system": "http://snomed.info/sct",
+    "code": "260548002",
+    "display": "Oral"
+    }],
+    "text": "Oral"
+    },
+    "doseQuantity": {
+    "value": "2",
+    "unit": "tablet",
+    "system": "http://unitsofmeasure.org",
+    "code": "{tbl}"
+    }
+    }]
+    },
+    "search": {
+    "mode": "match"
+    }
+    },
+    {
+    "link": [{
+    "relation": "self",
+    "url": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/esez-N6YK40cQiAhgRqyLeAzjZ2FuYqIs61XRzOmBv2Y3"
+    }],
+    "fullUrl": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/esez-N6YK40cQiAhgRqyLeAzjZ2FuYqIs61XRzOmBv2Y3",
+    "resource": {
+    "resourceType": "MedicationStatement",
+    "id": "esez-N6YK40cQiAhgRqyLeAzjZ2FuYqIs61XRzOmBv2Y3",
+    "identifier": [{
+    "use": "usual",
+    "system": "1.2.840.114350.1.13.861.1.7.2.798268",
+    "value": "3742728"
+    }],
+    "status": "active",
+    "category": {
+    "coding": [{
+    "code": "outpatient",
+    "display": "Outpatient"
+    }],
+    "text": "Outpatient"
+    },
+    "medicationReference": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Medication/eH68D7YywtpGIi7sR77mezvOjDQhQ9o55O-vPt1Fv7Zg3",
+    "display": "atenolol (TENORMIN) tablet 100 mg"
+    },
+    "effectivePeriod": {
+    "start": "2016-09-15T16:00:00Z"
+    },
+    "informationSource": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Practitioner/egCj4Z7EG1mplI4xYrONFRQ3",
+    "display": "PROVIDER, TESTING"
+    },
+    "subject": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Patient/eFKsVr2y75R9CKzJKJ37wMg3",
+    "display": "Friend, All"
+    },
+    "taken": "unk",
+    "dosage": [{
+    "timing": {
+    "repeat": {
+    "boundsPeriod": {
+    "start": "2016-09-15T16:00:00Z"
+    },
+    "timeOfDay": ["06:00:00"]
+    }
+    },
+    "asNeededBoolean": false,
+    "route": {
+    "coding": [{
+    "system": "http://snomed.info/sct",
+    "code": "260548002",
+    "display": "Oral"
+    }],
+    "text": "Oral"
+    },
+    "doseQuantity": {
+    "value": "1",
+    "unit": "tablet",
+    "system": "http://unitsofmeasure.org",
+    "code": "{tbl}"
+    }
+    }]
+    },
+    "search": {
+    "mode": "match"
+    }
+    },
+    {
+    "link": [{
+    "relation": "self",
+    "url": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/exn.ir9w2YixbR4--J4Bw6CK3cUzZVeCW6qFn6vettHQ3"
+    }],
+    "fullUrl": "https://hostname/instance/api/FHIR/STU3/MedicationStatement/exn.ir9w2YixbR4--J4Bw6CK3cUzZVeCW6qFn6vettHQ3",
+    "resource": {
+    "resourceType": "MedicationStatement",
+    "id": "exn.ir9w2YixbR4--J4Bw6CK3cUzZVeCW6qFn6vettHQ3",
+    "identifier": [{
+    "use": "usual",
+    "system": "1.2.840.114350.1.13.861.1.7.2.798268",
+    "value": "3742730"
+    }],
+    "status": "active",
+    "category": {
+    "coding": [{
+    "code": "outpatient",
+    "display": "Outpatient"
+    }],
+    "text": "Outpatient"
+    },
+    "medicationReference": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Medication/e-694eKHI6NSRTfgKrmMEouMIUOsegrOzJoBTmN39euQ3",
+    "display": "ibuprofen (MOTRIN) tablet 400 mg"
+    },
+    "effectivePeriod": {
+    "start": "2016-09-14T22:33:49Z"
+    },
+    "informationSource": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Practitioner/egCj4Z7EG1mplI4xYrONFRQ3",
+    "display": "PROVIDER, TESTING"
+    },
+    "subject": {
+    "reference": "https://hostname/instance/api/FHIR/STU3/Patient/eFKsVr2y75R9CKzJKJ37wMg3",
+    "display": "Friend, All"
+    },
+    "taken": "unk",
+    "dosage": [{
+    "timing": {
+    "repeat": {
+    "boundsPeriod": {
+    "start": "2016-09-14T22:33:49Z"
+    },
+    "frequency": 1,
+    "period": "6",
+    "periodUnit": "Hour"
+    }
+    },
+    "asNeededBoolean": true,
+    "route": {
+    "coding": [{
+    "system": "http://snomed.info/sct",
+    "code": "260548002",
+    "display": "Oral"
+    }],
+    "text": "Oral"
+    },
+    "doseQuantity": {
+    "value": "2",
+    "unit": "tablet",
+    "system": "http://unitsofmeasure.org",
+    "code": "{tbl}"
+    }
+    }]
+    },
+    "search": {
+    "mode": "match"
+    }
+    }]
+    }
