@@ -8,8 +8,6 @@
       "resource": {
         "resourceType": "NutritionOrder",
         "id": "emV2M.3TKuBneTxDOPf2VYUgryLaXH6Qus6BUOZ8Tg9k3",
-        "status": "active",
-        "intent": "order",
         "patient": {
           "reference": "eFLQ4DCYc6n424WRext9mTQ3",
           "display": "Patient, Epic"

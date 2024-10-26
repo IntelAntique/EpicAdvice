@@ -25,7 +25,7 @@ def get_response():
     user_input = request.json.get('user_input')
 
     user_data = get_user_data()
-    gender, age, family_member_history, occupation, diet = user_data
+    gender, age, family_member_history, occupation, nutrition = user_data
 
     ethnicity = "Caucasian"
     highlight = True
@@ -34,7 +34,7 @@ def get_response():
     You summarize lab reports and medical terms in a way that is:
     - Appropriate for a {age} year old {gender} child
     - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
-    - Mindful of {diet} dietary considerations when discussing nutrition-related results
+    - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
     - Using simple language suitable for a {age} year old {occupation}
     - Including child-friendly analogies and examples
     - Avoiding potentially anxiety-triggering medical terminology
@@ -56,12 +56,12 @@ def get_user_data():
         with sqlite3.connect(DATABASE_PATH) as conn:
             cursor = conn.cursor()
 
-            query = "SELECT Gender, Age, FamilyMemberHistory, Occupation, Nutrition FROM Users WHERE id = 1"
+            query = "SELECT Age, Gender, FamilyMemberHistory, Occupation, Nutrition FROM Users WHERE id = 1"
             cursor.execute(query)
             user_data = cursor.fetchone()
 
             if user_data:
-                gender, age, history, occupation, diet = user_data
+                age, gender, history, occupation, nutrition = user_data
 
                 # Parse the FamilyMemberHistory JSON to extract condition_notes
                 try:
@@ -70,7 +70,22 @@ def get_user_data():
                 except (json.JSONDecodeError, IndexError, TypeError) as e:
                     condition_notes = "Unknown"  
 
-                return gender, age, condition_notes, occupation, diet
+                # Extract occupation from Occupation.json if available
+                try:
+                    occupation = occupation.get("valueCodeableConcept", {}).get("coding", [])[0].get("display")
+                except (IndexError, KeyError, TypeError):
+                    occupation = "Unknown"  
+
+                 # Extract nutrition details from NutritionOrder.json if available
+                try:
+                    nutrition_order = nutrition["entry"][0]["resource"]["oralDiet"]
+                    nutrition_type = nutrition_order["type"][0]["text"]
+                    nutrition_texture = nutrition_order["texture"][0]["modifier"]["text"]
+                    nutrition_guideline = f"{nutrition_type} diet, {nutrition_texture} texture"
+                except (IndexError, KeyError, TypeError):
+                    nutrition_guideline = "null" 
+
+                return gender, age, condition_notes, occupation, nutrition_guideline
             else:
                 return None
     except sqlite3.Error as e:
