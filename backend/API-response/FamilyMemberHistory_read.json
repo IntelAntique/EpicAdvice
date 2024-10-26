@@ -1,9 +1,7 @@
 {
     "resourceType": "FamilyMemberHistory",
     "id": "ePM.Qux3IY3tsLDfCmpxnDhhUJ4WWDI.DRtTk-LVsHD03",
-    "status": "completed",
     "patient": {
-      "reference": "Patient/eV6Ofju2.rCOp6TCunVM9Rg3",
       "display": "Smith, Sally"
     },
     "date": "2021-07-05",
