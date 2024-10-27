@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 import os
+import json
+import sqlite3
 from flask.helpers import abort
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -12,7 +14,7 @@ genai.configure(api_key=key)
 
 app = Flask(__name__)
 CORS(app)
-
+DATABASE_PATH = 'Database/epicAdvice.db'
 @app.route('/')
 def home():
     return "Welcome to the AI Response Server!"
@@ -20,19 +22,18 @@ def home():
 @app.route('/get_response', methods=['POST'])
 def get_response():
     user_input = request.json.get('user_input')
-    gender = "Male"
-    age = 5
-    history = "Obsessive Compulsive Disorder"
+
+    user_data = get_user_data()
+    gender, age, family_member_history, occupation, nutrition = user_data
+
     ethnicity = "Caucasian"
-    occupation = "Student"
-    diet = "Vegan"
     highlight = True
 
     sys_ins = f"""
     You summarize lab reports and medical terms in a way that is:
     - Appropriate for a {age} year old {gender} child
-    - Extra careful to explain concepts related to {history} in a gentle, reassuring way
-    - Mindful of {diet} dietary considerations when discussing nutrition-related results
+    - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
+    - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
     - Using simple language suitable for a {age} year old {occupation}
     - Including child-friendly analogies and examples
     - Avoiding potentially anxiety-triggering medical terminology
@@ -46,6 +47,49 @@ def get_response():
     response = model.generate_content(user_input)
 
     return jsonify({'response': response.text})
+
+
+##helper function
+def get_user_data():
+    try:
+        with sqlite3.connect(DATABASE_PATH) as conn:
+            cursor = conn.cursor()
+
+            query = "SELECT Age, Gender, FamilyMemberHistory, Occupation, Nutrition FROM Users WHERE id = 1"
+            cursor.execute(query)
+            user_data = cursor.fetchone()
+
+            if user_data:
+                age, gender, history, occupation, nutrition = user_data
+
+                # Parse the FamilyMemberHistory JSON to extract condition_notes
+                try:
+                    history_json = json.loads(history)
+                    condition_notes = history_json.get("condition", [])[0].get("note", [])[0].get("text")
+                except (json.JSONDecodeError, IndexError, TypeError) as e:
+                    condition_notes = "Unknown"  
+
+                # Extract occupation from Occupation.json if available
+                try:
+                    occupation = occupation.get("valueCodeableConcept", {}).get("coding", [])[0].get("display")
+                except (IndexError, KeyError, TypeError):
+                    occupation = "Unknown"  
+
+                 # Extract nutrition details from NutritionOrder.json if available
+                try:
+                    nutrition_order = nutrition["entry"][0]["resource"]["oralDiet"]
+                    nutrition_type = nutrition_order["type"][0]["text"]
+                    nutrition_texture = nutrition_order["texture"][0]["modifier"]["text"]
+                    nutrition_guideline = f"{nutrition_type} diet, {nutrition_texture} texture"
+                except (IndexError, KeyError, TypeError):
+                    nutrition_guideline = "null" 
+
+                return gender, age, condition_notes, occupation, nutrition_guideline
+            else:
+                return None
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return None
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

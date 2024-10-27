@@ -22,9 +22,6 @@
         }
       ]
     },
-    "subject": {
-      "reference": "Patient/example"
-    },
     "valueCodeableConcept": {
       "coding": [
         {

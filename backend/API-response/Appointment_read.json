@@ -4,17 +4,6 @@
 
     "id": "elmPBHPxEEEvVLKSSR6xGfQaaeOxoGVxtCt9FlmcwgQ03",
 
-    "identifier": [
-
-        {
-
-            "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.3.698084.8",
-
-            "value": "10000209577"
-
-        }
-
-    ],
 
     "status": "booked",
 
@@ -25,8 +14,6 @@
             "coding": [
 
                 {
-
-                    "system": "http://open.epic.com/FHIR/StructureDefinition/appointment-service-category",
 
                     "code": "appointment",
 
@@ -50,8 +37,6 @@
 
                 {
 
-                    "system": "urn:oid:1.2.840.114350.1.13.5325.1.7.2.808267",
-
                     "code": "6",
 
                     "display": "Office Visit"
@@ -70,7 +55,6 @@
 
             {
 
-                "system": "urn:oid:2.16.840.1.113883.5.4",
 
                 "code": "AMB",
 
@@ -104,15 +88,6 @@
 
     ],
 
-    "reasonReference": [
-
-        {
-
-            "reference": "Condition/eMIcE44Y.K0BWJcJ.QI13kIddolPVrQtCRadjUBUtusXiVGaC07vvUp85vvtcpU1l3"
-
-        }
-
-    ],
 
     "description": "Visit for routine care",
 
@@ -134,7 +109,6 @@
 
             "actor": {
 
-                "reference": "Patient/eNO3wqOfAltfnWMfWBQ1WmQ3",
 
                 "display": "Doe, Jane"
 
@@ -158,8 +132,6 @@
 
             "actor": {
 
-                "reference": "Practitioner/eb3d.4apzwRM33Q91Nm7wJA3",
-
                 "display": "Amy Smith, MD"
 
             },
@@ -182,7 +154,6 @@
 
             "actor": {
 
-                "reference": "Location/ezECB8TyTDQJuuly5Byn.lQ3",
 
                 "display": "West Clinic"
 
