@@ -1,51 +1,51 @@
+from flask import Flask, request, jsonify
 import os
+from flask.helpers import abort
 import google.generativeai as genai
 from dotenv import load_dotenv
-
-max_temp = 1.0
+from flask_cors import CORS
 
 load_dotenv()
 key = os.getenv("API_KEY")
+max_temp = 1.0
+genai.configure(api_key=key)
 
-f = open("output.txt", "w")
+app = Flask(__name__)
+CORS(app)
 
-gender = "Male"
-age = 5
-history = "Obssessive Compulsive Disorder"
-ethnicity = "Caucasian"
-Occupation = "Student"
-diet = "Vegan"
-highlight = True
+@app.route('/')
+def home():
+    return "Welcome to the AI Response Server!"
 
-sys_ins = f"""
-You summarize lab reports and medical terms in a way that is:
-- Appropriate for a {age} year old {gender} child
-- Extra careful to explain concepts related to {history} in a gentle, reassuring way
-- Mindful of {diet} dietary considerations when discussing nutrition-related results
-- Using simple language suitable for a {age} year old {Occupation}
-- Including child-friendly analogies and examples
-- Avoiding potentially anxiety-triggering medical terminology
-- Using positive, encouraging language
-- Breaking down complex concepts into very small, digestible pieces
-- Using familiar objects and experiences from a {age} year old daily life for comparisons
-- {"use at most 3 sentences in the entire response" if (highlight) else "at most one paragraph"}
-"""
+@app.route('/get_response', methods=['POST'])
+def get_response():
+    user_input = request.json.get('user_input')
+    gender = "Male"
+    age = 5
+    history = "Obsessive Compulsive Disorder"
+    ethnicity = "Caucasian"
+    occupation = "Student"
+    diet = "Vegan"
+    highlight = True
 
-genai.configure(api_key=os.environ["API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-flash', 
-                              system_instruction = sys_ins)
+    sys_ins = f"""
+    You summarize lab reports and medical terms in a way that is:
+    - Appropriate for a {age} year old {gender} child
+    - Extra careful to explain concepts related to {history} in a gentle, reassuring way
+    - Mindful of {diet} dietary considerations when discussing nutrition-related results
+    - Using simple language suitable for a {age} year old {occupation}
+    - Including child-friendly analogies and examples
+    - Avoiding potentially anxiety-triggering medical terminology
+    - Using positive, encouraging language
+    - Breaking down complex concepts into very small, digestible pieces
+    - Using familiar objects and experiences from a {age} year old daily life for comparisons
+    - {"use at most 3 sentences in the entire response" if (highlight) else "at most one paragraph"}
+    """
 
-response = model.generate_content("What is autism?")
+    model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
+    response = model.generate_content(user_input)
 
-# response = model.generate_content(
-#     "Tell me a story about a magic backpack.",
-#     generation_config=genai.types.GenerationConfig(
-#         # Only one candidate for now.
-#         candidate_count=1,
-#         temperature=1.0,
-#     ),
-# )
+    return jsonify({'response': response.text})
 
-print(response.text)
-f.write(f"{response.text}")
-f.close()
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
