@@ -15,7 +15,6 @@ genai.configure(api_key=key)
 app = Flask(__name__)
 CORS(app)
 DATABASE_PATH = 'Database/epicAdvice.db'
-
 @app.route('/')
 def home():
     return "Welcome to the AI Response Server!"
