@@ -19,7 +19,7 @@ chatWidget.innerHTML = `
 
         <div id="chatWindow" class="chat-window hidden" style="display: none; flex-direction: column;">
             <div class="chat-header">
-                <h3>Epic Advice</h3>
+                <h5>Epic Advice</h5>
                 <button id="close-chat" class="close-chat-button">Close</button>
             </div>
             <div class="chat-messages" id="chatMessages" style="flex: 1; overflow-y: auto; padding: 10px;">
@@ -254,148 +254,130 @@ function openModal(content) {
 
 // Attach event listeners to buttons to show modal with different content
 document.getElementById('notesButton').addEventListener('click', function() {
-    const notesContent = `
-        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); max-height: 70vh; width: 90vw; overflow-y: auto; padding: 20px; border-radius: 10px;">
-            <h1 style="text-align: center; opacity: 1; color: white; font-weight: bold;">Doctor's Notes</h1>
-            <div class="card-container" style="background-color: rgba(255, 255, 255, 0.2); display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; border-radius: 10px;">
-                ${[{
-                    title: "Patient Information",
-                    content: `
-                        <p><strong>Name:</strong> XXXXX</p>
-                        <p><strong>Age:</strong> 25</p>
-                        <p><strong>Gender:</strong> male</p>
-                    `
-                },
-                {
-                    title: "History",
-                    content: `
-                        <p>The patient has no known food allergies and no recent changes in diet.</p>
-                        <p>There is [no/recent] history of travel and no known contact with sick individuals.</p>
-                        <p>No chronic illnesses, and the patient denies taking any new medications.</p>
-                    `
-                },
-                {
-                    title: "Physical Examination",
-                    content: `
-                        <p><strong>Vital Signs:</strong></p>
-                        <ul>
-                            <li>Temperature: 1000</li>
-                            <li>Blood Pressure: 1000</li>
-                            <li>Heart Rate: 100/min</li>
-                            <li>Respiratory Rate: 6/min</li>
-                        </ul>
-                        <p><strong>Abdominal Examination:</strong></p>
-                        <p>Increased bowel sounds and mild tenderness upon palpation, no rebound tenderness.</p>
-                        <p>Other Findings: No signs of dehydration, oral mucosa is moist, skin turgor is normal.</p>
-                    `
-                },
-                {
-                    title: "Diagnosis",
-                    content: `<p>Acute Gastroenteritis</p>`
-                },
-                {
-                    title: "Recommendations",
-                    content: `
-                        <ul>
-                            <li><strong>Hydration:</strong> Encourage the patient to drink plenty of fluids.</li>
-                            <li><strong>Diet:</strong> Recommend bland foods such as rice, toast, and bananas.</li>
-                            <li><strong>Rest:</strong> Advise the patient to rest and avoid strenuous activities.</li>
-                        </ul>
-                    `
-                }].map(data => `
-                    <div class="card" style="text-align: center; padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: auto; flex: 1 1 auto;">
-                        <h3>${data.title}</h3>
-                        <div>${data.content}</div>
-                    </div>
-                `).join('')}
+    const noteDiv = document.createElement('div');
+    noteDiv.innerHTML = `
+        <h3 style="text-align: center; font-weight: bold;">Doctor's Notes</h3>
+        <div style="padding: 20px; color: black;">
+            <h5>Patient Information</h5>
+            <p><strong>Name:</strong> XXXXX</p>
+            <p><strong>Age:</strong> 25</p>
+            <p><strong>Gender:</strong> male</p>
+            
+            <h5>History</h5>
+            <p>The patient has no known food allergies and no recent changes in diet.</p>
+            <p>There is [no/recent] history of travel and no known contact with sick individuals.</p>
+            <p>No chronic illnesses, and the patient denies taking any new medications.</p>
+            
+            <h5>Physical Examination</h5>
+            <p><strong>Vital Signs:</strong></p>
+            <ul>
+                <li>Temperature: 1000</li>
+                <li>Blood Pressure: 1000</li>
+                <li>Heart Rate: 100/min</li>
+                <li>Respiratory Rate: 6/min</li>
+            </ul>
+            <p><strong>Abdominal Examination:</strong></p>
+            <p>Increased bowel sounds and mild tenderness upon palpation, no rebound tenderness.</p>
+            <p>Other Findings: No signs of dehydration, oral mucosa is moist, skin turgor is normal.</p>
+            
+            <h5>Diagnosis</h5>
+            <p>Acute Gastroenteritis</p>
+            
+            <h5>Recommendations</h5>
+            <ul>
+                <li><strong>Hydration:</strong> Encourage the patient to drink plenty of fluids.</li>
+                <li><strong>Diet:</strong> Recommend bland foods such as rice, toast, and bananas.</li>
+                <li><strong>Rest:</strong> Advise the patient to rest and avoid strenuous activities.</li>
+            </ul>
+            <div style="text-align: center; margin-top: 10px;">
+                <button id="closeNote" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
             </div>
         </div>
     `;
-    openModal(notesContent);
+    noteDiv.style.position = 'fixed';
+    noteDiv.style.bottom = '20px';
+    noteDiv.style.right = 'calc(40px + 400px)';
+    noteDiv.style.zIndex = '1000';
+    noteDiv.style.background = '#fff';
+    noteDiv.style.padding = '20px';
+    noteDiv.style.borderRadius = '8px';
+    noteDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+    noteDiv.style.width = '600px';
+    noteDiv.style.height = '600px';
+    noteDiv.style.overflowY = 'auto';
+
+    // Append to body first
+    document.body.appendChild(noteDiv);
+
+    // Now add the event listener
+    document.getElementById('closeNote').addEventListener('click', function() {
+        noteDiv.remove();
+    });
 });
+
+
 
 
 document.getElementById('summaryButton').addEventListener('click', function() {
-    const summaryContent = `
-        <div style="
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80vw;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;">
+    const summaryDiv = document.createElement('div');
+    summaryDiv.innerHTML = `
+        <h3 style="text-align: center; font-weight: bold; padding: 10px;">Summary</h3>
+        <div style="padding: 20px;">
+            <h5>Patient Information</h5>
+            <p><strong>Name:</strong> XXXXX</p>
+            <p><strong>Age:</strong> 25</p>
+            <p><strong>Gender:</strong> male</p>
             
-            <h1 style="
-                font-weight: bold;
-                color: white;
-                background-color: #333;
-                padding: 10px;
-                margin: 0;
-                text-align: center;
-            ">Summary</h1>
+            <h5>Diagnosis</h5>
+            <p><strong>Acute Gastroenteritis</strong></p>
+            <ul>
+                <li>This is typically a temporary condition and should improve with proper treatment and care.</li>
+            </ul>
             
-            <div style="padding: 10px;">
-                ${[
-                    {
-                        title: "Patient Information",
-                        content: `
-                            <p><strong>Name:</strong> XXXXX</p>
-                            <p><strong>Age:</strong> 25</p>
-                            <p><strong>Gender:</strong> male</p>
-                        `
-                    },
-                    {
-                        title: "Diagnosis",
-                        content: `<strong>Acute Gastroenteritis</strong>
-                                  <li>This is typically a temporary condition and should improve with proper treatment and care.</li>`
-                    },
-                    {
-                        title: "Physical Examination Results",
-                        content: `
-                            <p>There is some mild tenderness and increased bowel sounds, which are common with gastroenteritis. However, there is no rebound tenderness or distension, which suggests there are no serious complications like bowel obstruction.</p>
-                        `
-                    },
-                    {
-                        title: "Overall Health",
-                        content: `
-                            Based on the examination, your vital signs such as temperature, blood pressure, heart rate, and respiratory rate are within the normal range. 
-                            This indicates that your body is coping well with the illness. There are no signs of severe dehydration, and your oral mucosa and skin turgor are normal, which is a positive sign.
-                        `
-                    }
-                ].map(data => `
-                    <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9;">
-                        <h3>${data.title}</h3>
-                        <div>${data.content}</div>
-                    </div>
-                `).join('')}
+            <h5>Physical Examination Results</h5>
+            <p>There is some mild tenderness and increased bowel sounds, which are common with gastroenteritis. However, there is no rebound tenderness or distension, which suggests there are no serious complications like bowel obstruction.</p>
+            
+            <h5>Overall Health</h5>
+            <p>Based on the examination, your vital signs such as temperature, blood pressure, heart rate, and respiratory rate are within the normal range. This indicates that your body is coping well with the illness. There are no signs of severe dehydration, and your oral mucosa and skin turgor are normal, which is a positive sign.</p>
+            
+            <div style="text-align: center; margin-top: 10px;">
+                <button id="closeSummary" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
             </div>
         </div>
     `;
-    openModal(summaryContent);
+
+    // Apply styles directly to the summaryDiv
+    summaryDiv.style.position = 'fixed';
+    summaryDiv.style.bottom = '20px';
+    summaryDiv.style.right = 'calc(40px + 400px)';
+    summaryDiv.style.zIndex = '1000';
+    summaryDiv.style.background = '#fff';
+    summaryDiv.style.padding = '20px';
+    summaryDiv.style.borderRadius = '8px';
+    summaryDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+    summaryDiv.style.width = '600px';
+    summaryDiv.style.height = '600px';
+    summaryDiv.style.overflowY = 'auto';
+
+    document.body.appendChild(summaryDiv);
+
+    // Add close functionality
+    document.getElementById('closeSummary').addEventListener('click', function() {
+        summaryDiv.remove();
+    });
 });
+
 
 
 
 document.getElementById('planButton').addEventListener('click', function() {
     const planDiv = document.createElement('div');
     planDiv.innerHTML = `
-        <h2>Today's Health Plan <span style="float: right; font-size: 14px;">Oct 17, 2024</span></h2>
-        <br>
-        <h3>🩺 Medication</h3>
-        <br>
+        <p>Today's Health Plan <span style="float: right; font-size: 10px;">Oct 17, 2024</span></p>
+        <p>🩺 Medication</p>
         <p><strong>Amoxicillin</strong><br>Take 1 tablet (50mg) by mouth twice a day (once in the morning and once in the evening) for 10 days.</p>
-        <br>
         <p><strong>Nicotine 14MG/24HR Patch</strong><br>Place 1 patch on the skin (one) time each day at the same time.</p>
-        <br>
-        <br>
-        <h3>🌱 Vita’s Care Plan for You</h3>
-        <br>
+        <p>🌱 Vita’s Care Plan for You</p>
         <ul>
             <li>Avoid cold drinks or caffeine, which can irritate your throat.</li>
             <li>Eat soft, non-spicy foods that are easy on your throat, like soup or yogurt.</li>
@@ -413,7 +395,9 @@ document.getElementById('planButton').addEventListener('click', function() {
     planDiv.style.padding = '20px';
     planDiv.style.borderRadius = '8px';
     planDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-    planDiv.style.width = '300px';
+    planDiv.style.width = '400px';
+    planDiv.style.height = '600px';
+    planDiv.style.overflowY = 'auto'; 
 
 
     document.body.appendChild(planDiv);

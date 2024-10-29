@@ -12,7 +12,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.bilibili.com/*"], //The plugin is only shown on the site bilibili
+      "matches": ["https://www.uwhealth.org/*"], //The plugin is only shown on the site bilibili
       "js": ["scripts/content.js"],
       "css": ["scripts/page1.css"]
     }
