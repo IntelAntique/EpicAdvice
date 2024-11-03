@@ -27,17 +27,45 @@ Users Table
  - Nutrition(Diet Pattern)
  - ActivityLevel 
  - Occupation                  
- - Address                           
+ - Address              
+
+### Setting up new database
+ Run: 
+ `sqlite3 epicAdvice.db`
+ `SELECT * FROM Users WHERE id = 1;`
+ `SELECT FirstName, LastName, Email, Age, Gender FROM Users;`             
                                                           
                        
        
 
  Note thet the Ethnicity attribute follows coding systems [HL7](https://terminology.hl7.org/CodeSystem-v3-Ethnicity.html) standard, and Occupation attribute follows SNOMED coding
 
- ### Get Started 
+
+ # Get Started 
+ ## Prerequisites
+- Python 3.9 
  navigate to `backend/DataBase` directory
- 
- Run: 
- `sqlite3 epicAdvice.db`
- `SELECT * FROM Users WHERE id = 1;`
- `SELECT FirstName, LastName, Email, Age, Gender FROM Users;`
+
+ **Install dependencies:**
+    Make sure the required packages are installed:
+
+    pip install flask flask-cors python-dotenv google-generativeai
+
+## Environment Setup
+
+
+1, **Create a `.env` file:**
+   In the `backend` directory, create a `.env` file with your environment variables. Here’s an example:
+
+   ```plaintext
+   API_KEY=your_google_api_key
+
+
+
+## Grant Database premission
+chmod 644 DataBase/epicAdvice.db
+chmod 755 DataBase
+
+
+
+
