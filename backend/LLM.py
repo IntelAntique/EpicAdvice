@@ -14,7 +14,7 @@ genai.configure(api_key=key)
 
 app = Flask(__name__)
 CORS(app)
-DATABASE_PATH = 'Database/epicAdvice.db'
+DATABASE_PATH = 'DataBase/epicAdvice.db'
 @app.route('/')
 def home():
     return "Welcome to the AI Response Server!"
@@ -71,7 +71,8 @@ def get_user_data():
 
                 # Extract occupation from Occupation.json if available
                 try:
-                    occupation = occupation.get("valueCodeableConcept", {}).get("coding", [])[0].get("display")
+                    occupation_json = json.loads(occupation)
+                    occupation = occupation_json.get("valueCodeableConcept", {}).get("coding", [])[0].get("display")
                 except (IndexError, KeyError, TypeError):
                     occupation = "Unknown"  
 
