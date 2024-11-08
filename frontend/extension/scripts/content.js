@@ -3,12 +3,6 @@ if (window) {
     console.log("Y");
 }
 
-const linkElement = document.createElement('link');
-linkElement.rel = 'stylesheet';
-linkElement.href = chrome.runtime.getURL("scripts/page1.css");
-document.head.appendChild(linkElement);
-console.log("CSS file loaded from:", linkElement.href);
-
 const chatWidget = document.createElement('div');
 chatWidget.innerHTML = `
     <div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
@@ -161,6 +155,10 @@ style.innerHTML = `
 .chat-options button:hover {
     background-color: #e1e1e1;
 }
+
+.highlighted {
+        background-color: yellow;
+    }
 `;
 document.head.appendChild(style);
 
@@ -242,6 +240,7 @@ function sendMessage() {
         });
     }
 }
+
 
 
 // Function to open modal and display content
@@ -430,3 +429,55 @@ document.getElementById('chat-icon').addEventListener('mouseenter', function() {
 document.getElementById('chat-icon').addEventListener('mouseleave', function() {
     document.getElementById('hover-text').style.display = 'none';
 });
+
+// hightlight func
+document.addEventListener('mouseup', (event) => {
+    const selectedText = window.getSelection().toString();
+    if (selectedText.length > 0 && !chatWidget.contains(event.target)) {
+        highlightSelection();
+        console.log("Captured Highlighted Text:", selectedText);
+    }
+});
+
+let clickCount = 0;
+
+document.addEventListener('click', (event) => {
+    if (!event.target.classList.contains('highlighted') && !chatWidget.contains(event.target)) {
+        clickCount++;
+        if (clickCount >= 2) {
+            clearHighlights();
+            clickCount = 0;
+        }
+    } else {
+        clickCount = 0;
+    }
+});
+
+
+function highlightSelection() {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    const highlightSpan = document.createElement('span');
+    highlightSpan.classList.add('highlighted');
+    highlightSpan.style.backgroundColor = 'yellow';
+
+    const selectedContents = range.cloneContents();
+    highlightSpan.appendChild(selectedContents);
+
+    range.deleteContents();
+    range.insertNode(highlightSpan);
+    selection.removeAllRanges();
+}
+
+function clearHighlights() {
+    const highlightedElements = document.querySelectorAll('.highlighted');
+    highlightedElements.forEach(element => {
+        const parent = element.parentNode;
+        while (element.firstChild) {
+            parent.insertBefore(element.firstChild, element);
+        }
+        parent.removeChild(element);
+    });
+}
