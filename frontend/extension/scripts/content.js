@@ -430,3 +430,61 @@ document.getElementById('chat-icon').addEventListener('mouseenter', function() {
 document.getElementById('chat-icon').addEventListener('mouseleave', function() {
     document.getElementById('hover-text').style.display = 'none';
 });
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// functions for taking pictures
+// Check if the page has html2canvas; if not, inject it dynamically
+// Create a test button for capturing screenshots
+const testButton = document.createElement('button');
+testButton.id = 'test-screenshot-button';
+testButton.textContent = 'Capture Screenshot';
+testButton.style.position = 'fixed';
+testButton.style.bottom = '20px';
+testButton.style.left = '20px';
+testButton.style.zIndex = '9999';
+testButton.style.padding = '10px';
+testButton.style.backgroundColor = '#4CAF50';
+testButton.style.color = 'white';
+testButton.style.border = 'none';
+testButton.style.borderRadius = '5px';
+testButton.style.cursor = 'pointer';
+
+document.body.appendChild(testButton);
+
+testButton.addEventListener('click', async () => {
+    console.log('Capture Screenshot button clicked');
+    
+    // Capture screenshot and save it locally
+    await testSaveScreenshotLocally();
+});
+
+if (!window.html2canvas) {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/html2canvas';
+    script.onload = function () {
+        console.log('html2canvas loaded');
+    };
+    document.head.appendChild(script);
+}
+async function testSaveScreenshotLocally() {
+    const image = await captureScreenshot();
+    if (image) {
+        chrome.runtime.sendMessage(
+            {
+                action: 'downloadImage',
+                imageData: image
+            },
+            (response) => {
+                if (response && response.success) {
+                    console.log("Screenshot saved successfully");
+                } else {
+                    console.error("Failed to save screenshot");
+                }
+            }
+        );
+    } else {
+        console.error('Failed to capture screenshot');
+    }
+}
+
