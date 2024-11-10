@@ -50,6 +50,9 @@ Users Table
     Make sure the required packages are installed:
 
     pip install flask flask-cors python-dotenv google-generativeai
+    pip install flask pillow pytesseract
+    brew install tesseract
+
 
 ## Environment Setup
 
