@@ -455,8 +455,7 @@ document.body.appendChild(testButton);
 testButton.addEventListener('click', async () => {
     console.log('Capture Screenshot button clicked');
     
-    // Capture screenshot and save it locally
-    await testSaveScreenshotLocally();
+    await sendScreenshotToBackend();
 });
 
 if (!window.html2canvas) {
@@ -467,6 +466,45 @@ if (!window.html2canvas) {
     };
     document.head.appendChild(script);
 }
+
+async function captureScreenshot() {
+    try {
+        const element = document.body; // Capture the entire page
+        const canvas = await html2canvas(element, {
+            allowTaint: true,
+            useCORS: true,
+            foreignObjectRendering: true,
+            scale: 2
+        });
+        const image = canvas.toDataURL('image/png');
+        return image;
+    } catch (error) {
+        console.error('Error capturing screenshot:', error);
+    }
+}
+
+async function sendScreenshotToBackend() {
+    const image = await captureScreenshot();
+    if (image) {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/upload_image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image })
+            });
+
+            const result = await response.json();
+            console.log('Response from server:', result);
+        } catch (error) {
+            console.error('Failed to send image to backend:', error);
+        }
+    }
+}
+
+
+//method for local testing
 async function testSaveScreenshotLocally() {
     const image = await captureScreenshot();
     if (image) {

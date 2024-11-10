@@ -3,6 +3,9 @@ import os
 import json
 import sqlite3
 from flask.helpers import abort
+import base64
+from PIL import Image
+from io import BytesIO
 import google.generativeai as genai
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -49,7 +52,31 @@ def get_response():
     return jsonify({'response': response.text})
 
 
-##helper function
+
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    data = request.json
+    image_data = data.get('image')
+
+    if image_data:
+        # Remove the data URL prefix and decode the image
+        image_data = image_data.split(',')[1]  # Remove the "data:image/png;base64," prefix
+        image_bytes = base64.b64decode(image_data)
+
+        # Save the image to the local directory
+        image = Image.open(BytesIO(image_bytes))
+        file_path = 'saved_screenshot.png'
+        image.save(file_path)
+
+        return jsonify({'message': 'Image saved successfully!', 'path': file_path}), 200
+    else:
+        return jsonify({'error': 'No image data received'}), 400
+
+
+
+
+
+##helper function to query data from db
 def get_user_data():
     try:
         with sqlite3.connect(DATABASE_PATH) as conn:
@@ -62,7 +89,7 @@ def get_user_data():
             if user_data:
                 age, gender, history, occupation, nutrition = user_data
 
-                # Parse the FamilyMemberHistory JSON to extract condition_notes
+                # extract condition_notes
                 try:
                     history_json = json.loads(history)
                     condition_notes = history_json.get("condition", [])[0].get("note", [])[0].get("text")
