@@ -434,97 +434,136 @@ document.getElementById('chat-icon').addEventListener('mouseleave', function() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions for taking pictures
-// Check if the page has html2canvas; if not, inject it dynamically
-// Create a test button for capturing screenshots
-const testButton = document.createElement('button');
-testButton.id = 'test-screenshot-button';
-testButton.textContent = 'Capture Screenshot';
-testButton.style.position = 'fixed';
-testButton.style.bottom = '20px';
-testButton.style.left = '20px';
-testButton.style.zIndex = '9999';
-testButton.style.padding = '10px';
-testButton.style.backgroundColor = '#4CAF50';
-testButton.style.color = 'white';
-testButton.style.border = 'none';
-testButton.style.borderRadius = '5px';
-testButton.style.cursor = 'pointer';
+let stream;
+let startX, startY, endX, endY;
+let isSelecting = false;
+const selectionBox = document.createElement('div');
 
-document.body.appendChild(testButton);
+// Create a button to start the capture process
+const captureButton = document.createElement('button');
+captureButton.id = 'capture-button';
+captureButton.textContent = 'Capture Screenshot';
+captureButton.style.position = 'fixed';
+captureButton.style.bottom = '20px';
+captureButton.style.left = '20px';
+captureButton.style.zIndex = '9999';
+captureButton.style.padding = '10px';
+captureButton.style.backgroundColor = '#4CAF50';
+captureButton.style.color = 'white';
+captureButton.style.border = 'none';
+captureButton.style.borderRadius = '5px';
+captureButton.style.cursor = 'pointer';
+document.body.appendChild(captureButton);
 
-testButton.addEventListener('click', async () => {
-    console.log('Capture Screenshot button clicked');
-    
-    await sendScreenshotToBackend();
+captureButton.addEventListener('click', async () => {
+    await startScreenCapture();
 });
 
-if (!window.html2canvas) {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/html2canvas';
-    script.onload = function () {
-        console.log('html2canvas loaded');
-    };
-    document.head.appendChild(script);
-}
+selectionBox.id = 'selection-box';
+selectionBox.style.position = 'absolute';
+selectionBox.style.border = '2px dashed #00f';
+selectionBox.style.display = 'none';
+selectionBox.style.pointerEvents = 'none';
+document.body.appendChild(selectionBox);
 
-async function captureScreenshot() {
+async function startScreenCapture() {
     try {
-        const element = document.body; // Capture the entire page
-        const canvas = await html2canvas(element, {
-            allowTaint: true,
-            useCORS: true,
-            foreignObjectRendering: true,
-            scale: 2
+        // Capture the screen using the Screen Capture API
+        stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const track = stream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(track);
+        const bitmap = await imageCapture.grabFrame();
+
+        // Draw the captured screen on a canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        const context = canvas.getContext('2d');
+        context.drawImage(bitmap, 0, 0);
+        
+        // Allow user to select an area
+        document.addEventListener('mousedown', startSelection);
+        document.addEventListener('mouseup', endSelection);
+        
+        // Store the canvas for cropping later
+        captureCanvas = canvas;
+        captureContext = context;
+    } catch (err) {
+        console.error('Error capturing screen:', err);
+    }
+}
+
+function startSelection(event) {
+    isSelecting = true;
+    startX = event.clientX;
+    startY = event.clientY;
+    selectionBox.style.left = `${startX}px`;
+    selectionBox.style.top = `${startY}px`;
+    selectionBox.style.width = '0px';
+    selectionBox.style.height = '0px';
+    selectionBox.style.display = 'block';
+
+    document.addEventListener('mousemove', resizeSelection);
+}
+
+function resizeSelection(event) {
+    if (!isSelecting) return;
+    const width = event.clientX - startX;
+    const height = event.clientY - startY;
+    selectionBox.style.width = `${Math.abs(width)}px`;
+    selectionBox.style.height = `${Math.abs(height)}px`;
+    selectionBox.style.left = `${Math.min(startX, event.clientX)}px`;
+    selectionBox.style.top = `${Math.min(startY, event.clientY)}px`;
+}
+
+function endSelection(event) {
+    isSelecting = false;
+    endX = event.clientX;
+    endY = event.clientY;
+
+    document.removeEventListener('mousemove', resizeSelection);
+    document.removeEventListener('mousedown', startSelection);
+    document.removeEventListener('mouseup', endSelection);
+
+    // Crop the selected area and send to backend
+    cropAndSendToBackend();
+}
+
+async function cropAndSendToBackend() {
+    const [x, y, width, height] = [
+        Math.min(startX, endX),
+        Math.min(startY, endY),
+        Math.abs(endX - startX),
+        Math.abs(endY - startY)
+    ];
+
+    // Create a cropped canvas
+    const croppedCanvas = document.createElement('canvas');
+    croppedCanvas.width = width;
+    croppedCanvas.height = height;
+    const croppedContext = croppedCanvas.getContext('2d');
+    croppedContext.drawImage(captureCanvas, x, y, width, height, 0, 0, width, height);
+
+    // Convert the cropped canvas to a Blob
+    const blob = await new Promise((resolve) => croppedCanvas.toBlob(resolve, 'image/png'));
+
+    // Stop the screen capture stream
+    stream.getTracks().forEach(track => track.stop());
+
+    // Upload the cropped image to the backend
+    const formData = new FormData();
+    formData.append('screenshot', blob, 'cropped_screenshot.png');
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/upload_screenshot', {
+            method: 'POST',
+            body: formData
         });
-        const image = canvas.toDataURL('image/png');
-        return image;
+        const result = await response.json();
+        console.log('Upload successful:', result);
     } catch (error) {
-        console.error('Error capturing screenshot:', error);
+        console.error('Failed to upload screenshot:', error);
     }
+
+    selectionBox.style.display = 'none';
 }
-
-async function sendScreenshotToBackend() {
-    const image = await captureScreenshot();
-    if (image) {
-        try {
-            const response = await fetch('http://127.0.0.1:5000/process_image', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ image }),
-                credentials: 'include'
-            });
-            console.log('Request body:', response)
-
-            const result = await response.json();
-            console.log('Response from server:', result);
-        } catch (error) {
-            console.error('Failed to send image to backend:', error);
-        }
-    }
-}
-
-
-//method for local testing
-async function testSaveScreenshotLocally() {
-    const image = await captureScreenshot();
-    if (image) {
-        chrome.runtime.sendMessage(
-            {
-                action: 'downloadImage',
-                imageData: image
-            },
-            (response) => {
-                if (response && response.success) {
-                    console.log("Screenshot saved successfully");
-                } else {
-                    console.error("Failed to save screenshot");
-                }
-            }
-        );
-    } else {
-        console.error('Failed to capture screenshot');
-    }
-}
-

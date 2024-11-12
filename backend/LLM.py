@@ -145,7 +145,27 @@ def process_image():
     except Exception as e:
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 
+@app.route('/upload_screenshot', methods=['POST'])
+def upload_screenshot():
+    try:
+        if 'screenshot' not in request.files:
+            return jsonify({"error": "No file part in the request"}), 400
 
+        file = request.files['screenshot']
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+
+        # Save the file to the backend folder
+        backend_folder = os.path.dirname(os.path.abspath(__file__))
+        if not os.path.exists(backend_folder):
+            os.makedirs(backend_folder)
+
+        file_path = os.path.join(backend_folder, 'cropped_screenshot.png')
+        file.save(file_path)
+
+        return jsonify({"message": "Screenshot saved successfully", "path": file_path}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 
