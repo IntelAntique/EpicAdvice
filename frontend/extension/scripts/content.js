@@ -487,13 +487,15 @@ async function sendScreenshotToBackend() {
     const image = await captureScreenshot();
     if (image) {
         try {
-            const response = await fetch('http://127.0.0.1:5000/upload_image', {
+            const response = await fetch('http://127.0.0.1:5000/process_image', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ image })
+                body: JSON.stringify({ image }),
+                credentials: 'include'
             });
+            console.log('Request body:', response)
 
             const result = await response.json();
             console.log('Response from server:', result);

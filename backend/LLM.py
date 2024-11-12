@@ -9,6 +9,7 @@ from io import BytesIO
 import google.generativeai as genai
 from dotenv import load_dotenv
 from flask_cors import CORS
+import pytesseract
 
 load_dotenv()
 key = os.getenv("API_KEY")
@@ -16,7 +17,9 @@ max_temp = 1.0
 genai.configure(api_key=key)
 
 app = Flask(__name__)
-CORS(app)
+#CORS(app)
+CORS(app, supports_credentials=True)
+
 DATABASE_PATH = 'DataBase/epicAdvice.db'
 @app.route('/')
 def home():
@@ -52,7 +55,7 @@ def get_response():
     return jsonify({'response': response.text})
 
 
-
+#this function downloads the image to project folder, mainly for testing
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
     data = request.json
@@ -73,6 +76,59 @@ def upload_image():
         return jsonify({'error': 'No image data received'}), 400
 
 
+
+@app.route('/process_image', methods=['POST'])
+def process_image():
+    data = request.json.get('image')
+    try:  
+        if not data:
+            return jsonify({"error": "No image data provided"}), 400
+
+        # Remove the "data:image/png;base64," prefix if present
+        if data.startswith('data:image'):
+            data = data.split(',')[1]
+
+        # Decode the base64 image data
+        image_data = base64.b64decode(data)
+        image = Image.open(BytesIO(image_data))
+
+        # Optional: Save the image to a file for debugging
+        image.save("received_image.png")
+
+        # Here, you can pass the image to your LLM model for processing
+        # For example:
+        llm_response = "LLM ready"
+        #process_with_llm(image)
+        
+        return jsonify({"response": llm_response}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    # # Fetch user data as before
+    # user_data = get_user_data()
+    # gender, age, family_member_history, occupation, nutrition = user_data
+    # ethnicity = "Caucasian"
+    # highlight = True
+    # sys_ins = f"""
+    # You summarize lab reports in a way that is:
+    # - Appropriate for a {age} year old {gender} child
+    # - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
+    # - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
+    # - Using simple language suitable for a {age} year old {occupation}
+    # - Including child-friendly analogies and examples
+    # - Avoiding potentially anxiety-triggering medical terminology
+    # - Using positive, encouraging language
+    # - Breaking down complex concepts into very small, digestible pieces
+    # - Using familiar objects and experiences from a {age} year old daily life for comparisons
+    # - {"use at most 3 sentences in the entire response" if (highlight) else "at most one paragraph"}
+    # """
+
+    # # Generate a response using the extracted text
+    # model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
+    # response = model.generate_content(extracted_text)
+
+    # return jsonify({'response': response})
 
 
 
