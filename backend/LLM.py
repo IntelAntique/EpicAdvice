@@ -80,7 +80,7 @@ def upload_image():
 @app.route('/process_image', methods=['POST'])
 def process_image():
     data = request.json.get('image')
-    try:  
+    try:
         if not data:
             return jsonify({"error": "No image data provided"}), 400
 
@@ -88,47 +88,63 @@ def process_image():
         if data.startswith('data:image'):
             data = data.split(',')[1]
 
-        # Decode the base64 image data
-        image_data = base64.b64decode(data)
-        image = Image.open(BytesIO(image_data))
+        #Decode the base64 image data
+        try:
+            image_data = base64.b64decode(data)
+            image = Image.open(BytesIO(image_data))
+        except Exception as e:
+            return jsonify({"error": f"Failed to decode image data: {str(e)}"}), 400
 
-        # Optional: Save the image to a file for debugging
-        image.save("received_image.png")
+        #Save the image to a file
+        image_path = "/Users/wangyuqing/CS620/EpicAdvice/backend/received_image.png"
+        try:
+            image.save(image_path)
+        except Exception as e:
+            return jsonify({"error": f"Failed to save image: {str(e)}"}), 500
 
-        # Here, you can pass the image to your LLM model for processing
-        # For example:
-        llm_response = "LLM ready"
-        #process_with_llm(image)
-        
-        return jsonify({"response": llm_response}), 200
+        try:
+            if not os.path.exists(image_path):
+                return jsonify({"error": f"Image file not found at {image_path}"}), 404
 
+            image_file = genai.upload_file(path=image_path, display_name="Sample drawing")
+        except Exception as e:
+            return jsonify({"error": f"Failed to upload image to genai: {str(e)}"}), 500
+
+        #Fetch user data and generate system instructions
+        try:
+            user_data = get_user_data()
+            gender, age, family_member_history, occupation, nutrition = user_data
+
+            sys_ins = f"""
+            You summarize lab reports in a way that is:
+            - Appropriate for a {age} year old {gender} child
+            - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
+            - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
+            - Using simple language suitable for a {age} year old {occupation}
+            - Including child-friendly analogies and examples
+            - Avoiding potentially anxiety-triggering medical terminology
+            - Using positive, encouraging language
+            - Breaking down complex concepts into very small, digestible pieces
+            - Using familiar objects and experiences from a {age} year old daily life for comparisons
+            """
+        except Exception as e:
+            return jsonify({"error": f"Error fetching user data: {str(e)}"}), 500
+
+        #Generate a response using the LLM
+        try:
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(
+                ["Describe the image with a creative description.", image_file]
+            ).text
+        except Exception as e:
+            return jsonify({"error": f"Error generating content with LLM: {str(e)}"}), 500
+
+        # Return the LLM response
+        return jsonify({"response": response}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 
-    # # Fetch user data as before
-    # user_data = get_user_data()
-    # gender, age, family_member_history, occupation, nutrition = user_data
-    # ethnicity = "Caucasian"
-    # highlight = True
-    # sys_ins = f"""
-    # You summarize lab reports in a way that is:
-    # - Appropriate for a {age} year old {gender} child
-    # - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
-    # - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
-    # - Using simple language suitable for a {age} year old {occupation}
-    # - Including child-friendly analogies and examples
-    # - Avoiding potentially anxiety-triggering medical terminology
-    # - Using positive, encouraging language
-    # - Breaking down complex concepts into very small, digestible pieces
-    # - Using familiar objects and experiences from a {age} year old daily life for comparisons
-    # - {"use at most 3 sentences in the entire response" if (highlight) else "at most one paragraph"}
-    # """
 
-    # # Generate a response using the extracted text
-    # model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
-    # response = model.generate_content(extracted_text)
-
-    # return jsonify({'response': response})
 
 
 
@@ -174,6 +190,10 @@ def get_user_data():
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return None
+    
+def process_image_with_llm():
+    return None
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
