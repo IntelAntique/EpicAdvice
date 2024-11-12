@@ -96,7 +96,8 @@ def process_image():
             return jsonify({"error": f"Failed to decode image data: {str(e)}"}), 400
 
         #Save the image to a file
-        image_path = "/Users/wangyuqing/CS620/EpicAdvice/backend/received_image.png"
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        image_path = os.path.join(current_dir, 'received_image.png')
         try:
             image.save(image_path)
         except Exception as e:
