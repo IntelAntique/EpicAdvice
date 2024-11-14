@@ -3,9 +3,13 @@ import os
 import json
 import sqlite3
 from flask.helpers import abort
+import base64
+from PIL import Image
+from io import BytesIO
 import google.generativeai as genai
 from dotenv import load_dotenv
 from flask_cors import CORS
+import pytesseract
 
 load_dotenv()
 key = os.getenv("API_KEY")
@@ -13,7 +17,9 @@ max_temp = 1.0
 genai.configure(api_key=key)
 
 app = Flask(__name__)
-CORS(app)
+#CORS(app)
+CORS(app, supports_credentials=True)
+
 DATABASE_PATH = 'DataBase/epicAdvice.db'
 @app.route('/')
 def home():
@@ -82,7 +88,121 @@ def get_response():
     return jsonify({'response': response.text})
 
 
-##helper function
+#this function downloads the image to project folder, mainly for testing
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    data = request.json
+    image_data = data.get('image')
+
+    if image_data:
+        # Remove the data URL prefix and decode the image
+        image_data = image_data.split(',')[1]  # Remove the "data:image/png;base64," prefix
+        image_bytes = base64.b64decode(image_data)
+
+        # Save the image to the local directory
+        image = Image.open(BytesIO(image_bytes))
+        file_path = 'saved_screenshot.png'
+        image.save(file_path)
+
+        return jsonify({'message': 'Image saved successfully!', 'path': file_path}), 200
+    else:
+        return jsonify({'error': 'No image data received'}), 400
+
+
+
+@app.route('/process_image', methods=['POST'])
+def process_image():
+    data = request.json.get('image')
+    try:
+        if not data:
+            return jsonify({"error": "No image data provided"}), 400
+
+        # Remove the "data:image/png;base64," prefix if present
+        if data.startswith('data:image'):
+            data = data.split(',')[1]
+
+        #Decode the base64 image data
+        try:
+            image_data = base64.b64decode(data)
+            image = Image.open(BytesIO(image_data))
+        except Exception as e:
+            return jsonify({"error": f"Failed to decode image data: {str(e)}"}), 400
+
+        #Save the image to a file
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        image_path = os.path.join(current_dir, 'received_image.png')
+        try:
+            image.save(image_path)
+        except Exception as e:
+            return jsonify({"error": f"Failed to save image: {str(e)}"}), 500
+
+        try:
+            if not os.path.exists(image_path):
+                return jsonify({"error": f"Image file not found at {image_path}"}), 404
+
+            image_file = genai.upload_file(path=image_path, display_name="Sample drawing")
+        except Exception as e:
+            return jsonify({"error": f"Failed to upload image to genai: {str(e)}"}), 500
+
+        #Fetch user data and generate system instructions
+        try:
+            user_data = get_user_data()
+            gender, age, family_member_history, occupation, nutrition = user_data
+
+            sys_ins = f"""
+            You summarize lab reports in a way that is:
+            - Appropriate for a {age} year old {gender} child
+            - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
+            - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
+            - Using simple language suitable for a {age} year old {occupation}
+            - Including child-friendly analogies and examples
+            - Avoiding potentially anxiety-triggering medical terminology
+            - Using positive, encouraging language
+            - Breaking down complex concepts into very small, digestible pieces
+            - Using familiar objects and experiences from a {age} year old daily life for comparisons
+            """
+        except Exception as e:
+            return jsonify({"error": f"Error fetching user data: {str(e)}"}), 500
+
+        #Generate a response using the LLM
+        try:
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(
+                ["Describe the image with a creative description.", image_file]
+            ).text
+        except Exception as e:
+            return jsonify({"error": f"Error generating content with LLM: {str(e)}"}), 500
+
+        # Return the LLM response
+        return jsonify({"response": response}), 200
+    except Exception as e:
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
+@app.route('/upload_screenshot', methods=['POST'])
+def upload_screenshot():
+    try:
+        if 'screenshot' not in request.files:
+            return jsonify({"error": "No file part in the request"}), 400
+
+        file = request.files['screenshot']
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+
+        # Save the file to the backend folder
+        backend_folder = os.path.dirname(os.path.abspath(__file__))
+        if not os.path.exists(backend_folder):
+            os.makedirs(backend_folder)
+
+        file_path = os.path.join(backend_folder, 'cropped_screenshot.png')
+        file.save(file_path)
+
+        return jsonify({"message": "Screenshot saved successfully", "path": file_path}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+##helper function to query data from db
 def get_user_data():
     try:
         with sqlite3.connect(DATABASE_PATH) as conn:
@@ -95,7 +215,7 @@ def get_user_data():
             if user_data:
                 age, gender, history, occupation, nutrition = user_data
 
-                # Parse the FamilyMemberHistory JSON to extract condition_notes
+                # extract condition_notes
                 try:
                     history_json = json.loads(history)
                     condition_notes = history_json.get("condition", [])[0].get("note", [])[0].get("text")
@@ -124,6 +244,10 @@ def get_user_data():
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return None
+    
+def process_image_with_llm():
+    return None
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
