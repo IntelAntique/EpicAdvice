@@ -27,6 +27,7 @@ chatWidget.innerHTML = `
             <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box;">
                 <input type="text" placeholder="Send messages to AI doctor" id="chatInput" />
                 <button id="sendButton" class="send-button">Submit</button>
+                <button id="toggle-record">Start Recording</button>
             </div>
             <div class="chat-options" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; justify-content: space-around;">
                 <button id="notesButton" class="chat-option">Doctor's notes</button>
@@ -197,6 +198,8 @@ document.getElementById('chatInput').addEventListener('keypress', function(e) {
     }
 });
 
+
+// modifying as part of the project integration
 //most important func!!! do not update!!!
 function sendMessage() {
     const chatInput = document.getElementById('chatInput');
@@ -209,8 +212,8 @@ function sendMessage() {
         userMessage.classList.add('user-message');
         chatMessages.appendChild(userMessage);
         chatInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
+        chatMessages.scrollTop = chatMessages.scrollHeight;        
+        
         fetch('http://127.0.0.1:5000/get_response', {
             method: 'POST',
             headers: {
@@ -220,6 +223,7 @@ function sendMessage() {
         })
         .then(response => {
             if (!response.ok) {
+                console.log(response.json())
                 throw new Error('Network response was not ok');
             }
             return response.json();
@@ -372,38 +376,54 @@ document.getElementById('summaryButton').addEventListener('click', function() {
 
 document.getElementById('planButton').addEventListener('click', function() {
     const planDiv = document.createElement('div');
-    planDiv.innerHTML = `
-        <p>Today's Health Plan <span style="float: right; font-size: 10px;">Oct 17, 2024</span></p>
-        <p>🩺 Medication</p>
-        <p><strong>Amoxicillin</strong><br>Take 1 tablet (50mg) by mouth twice a day (once in the morning and once in the evening) for 10 days.</p>
-        <p><strong>Nicotine 14MG/24HR Patch</strong><br>Place 1 patch on the skin (one) time each day at the same time.</p>
-        <p>🌱 Vita’s Care Plan for You</p>
-        <ul>
-            <li>Avoid cold drinks or caffeine, which can irritate your throat.</li>
-            <li>Eat soft, non-spicy foods that are easy on your throat, like soup or yogurt.</li>
-            <li>If your symptoms do not improve in 3–5 days, schedule a follow-up appointment.</li>
-        </ul>
-        <div style="text-align: center; margin-top: 10px;">
-            <button id="closePlan" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
-        </div>
-    `;
-    planDiv.style.position = 'fixed';
-    planDiv.style.bottom = '20px';
-    planDiv.style.right = 'calc(40px + 400px)';
-    planDiv.style.zIndex = '1000';
-    planDiv.style.background = '#fff';
-    planDiv.style.padding = '20px';
-    planDiv.style.borderRadius = '8px';
-    planDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-    planDiv.style.width = '400px';
-    planDiv.style.height = '600px';
-    planDiv.style.overflowY = 'auto'; 
 
+    const title = document.createElement('p');
+    title.innerHTML = `Today's Health Plan <span style="float: right; font-size: 10px;">Oct 17, 2024</span>`;
+    planDiv.appendChild(title);
 
-    document.body.appendChild(planDiv);
-    document.getElementById('closePlan').addEventListener('click', function() {
+    const medicationHeader = document.createElement('p');
+    medicationHeader.textContent = '🩺 Medication';
+    planDiv.appendChild(medicationHeader);
+
+    const amoxicillin = document.createElement('p');
+    amoxicillin.innerHTML = `<strong>Amoxicillin</strong><br>Take 1 tablet (50mg) by mouth twice a day (once in the morning and once in the evening) for 10 days.`;
+    planDiv.appendChild(amoxicillin);
+
+    const nicotinePatch = document.createElement('p');
+    nicotinePatch.innerHTML = `<strong>Nicotine 14MG/24HR Patch</strong><br>Place 1 patch on the skin (one) time each day at the same time.`;
+    planDiv.appendChild(nicotinePatch);
+
+    const carePlanHeader = document.createElement('p');
+    carePlanHeader.textContent = '🌱 Vita’s Care Plan for You';
+    planDiv.appendChild(carePlanHeader);
+
+    const carePlanList = document.createElement('ul');
+
+    const carePlanItem1 = document.createElement('li');
+    carePlanItem1.textContent = 'Avoid cold drinks or caffeine, which can irritate your throat.';
+    carePlanList.appendChild(carePlanItem1);
+
+    // Add more list items as needed
+    // const carePlanItem2 = document.createElement('li');
+    // carePlanItem2.textContent = 'Another care plan item.';
+    // carePlanList.appendChild(carePlanItem2);
+
+    planDiv.appendChild(carePlanList);
+
+    // Add a close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Close';
+    closeButton.style.backgroundColor = '#0d253f'; // Darker blue for the button
+    closeButton.style.color = 'white'; // White text for the button
+    closeButton.style.border = 'none';
+    closeButton.style.padding = '5px 10px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.addEventListener('click', function() {
         planDiv.remove();
     });
+    planDiv.appendChild(closeButton);
+
+    document.body.appendChild(planDiv);
 });
 
 
@@ -566,4 +586,119 @@ async function cropAndSendToBackend() {
     }
 
     selectionBox.style.display = 'none';
+}
+
+//
+// DANGER ZONE: DO NOT MODIFY BELOW THIS LINE
+//
+
+document.addEventListener('mouseup', function(event) {
+    const selectedText = window.getSelection().toString().trim();
+    if (selectedText && event.target.tagName !== 'BUTTON') {
+        fetch('http://127.0.0.1:5000/get_response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_input: selectedText, highlight: true }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Error response:', text);
+                    throw new Error('Network response was not ok');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            const aiResponse = data.response;
+            showModal(event.pageX, event.pageY, aiResponse);
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+    }
+});
+
+function showModal(x, y, message) {
+    const modal = document.createElement('div');
+    modal.style.position = 'absolute';
+    modal.style.left = `${x}px`;
+    modal.style.top = `${y}px`;
+    modal.style.width = '25%'; // Set the width to a quarter of the screen
+    modal.style.padding = '10px';
+    modal.style.backgroundColor = '#1e3a5f'; // Dark cool blue background
+    modal.style.color = 'white'; // Bright white text
+    modal.style.border = '1px solid #0d253f'; // Slightly darker border
+    modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+    modal.style.zIndex = 1000;
+    modal.style.transition = 'opacity 0.5s';
+    modal.style.opacity = 0;
+
+    const messageParagraph = document.createElement('p');
+    messageParagraph.textContent = message;
+    modal.appendChild(messageParagraph);
+
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Close';
+    closeButton.style.backgroundColor = '#0d253f'; // Darker blue for the button
+    closeButton.style.color = 'white'; // White text for the button
+    closeButton.style.border = 'none';
+    closeButton.style.padding = '5px 10px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.onclick = function() {
+        modal.style.opacity = 0;
+        setTimeout(() => {
+            document.body.removeChild(modal);
+        }, 500);
+    };
+    modal.appendChild(closeButton);
+
+    document.body.appendChild(modal);
+    setTimeout(() => {
+        modal.style.opacity = 1;
+    }, 0);
+}
+
+let isRecording = false;
+
+document.getElementById('toggle-record').addEventListener('click', function() {
+    if (isRecording) {
+        stopRecording();
+    } else {
+        startRecording();
+    }
+});
+
+function startRecording() {
+    isRecording = true;
+    document.getElementById('toggle-record').textContent = 'Stop Recording';
+
+    fetch('http://127.0.0.1:5000/start_recording', {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.status);
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+}
+
+function stopRecording() {
+    isRecording = false;
+    document.getElementById('toggle-record').textContent = 'Start Recording';
+
+    fetch('http://127.0.0.1:5000/stop_recording', {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.status);
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
 }
