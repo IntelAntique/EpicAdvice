@@ -25,9 +25,8 @@ chatWidget.innerHTML = `
                 <button id="summaryButton" class="chat-option" style="background-color: #e0f7e9; padding: 4px; font-size: 12px; border: 1px solid #b2dfdb; border-radius: 5px; cursor: pointer; width: 40%;">Summary</button>
                 <button id="planButton" class="chat-option" style="background-color: #e6e6fa; padding: 4px; font-size: 12px; border: 1px solid #b2b2d8; border-radius: 5px; cursor: pointer; width: 40%;">Current Plan</button>
             </div>
-            <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center;">
+            <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; position: sticky; bottom: 0; background-color: #ffffff;">
                 <input type="text" placeholder="Send messages to AI doctor" id="chatInput" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" />
-                <button id="sendButton" class="send-button" style="margin-left: 5px; padding: 8px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">Submit</button>
                 <button id="voiceButton" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
                     <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" id="chat-icon" style="width: 24px; height: 24px;">
                 </button>
@@ -35,19 +34,20 @@ chatWidget.innerHTML = `
         </div>
     </div>
 
-    <!-- 新的交流窗口 -->
-    <div id="chat-imessages" style="display: none; position: fixed; top: 0; right: 0; width: 50%; height: 100%; background-color: #ffffff; z-index: 1001; overflow-y: auto; padding: 20px; box-shadow: -4px 0px 8px rgba(0,0,0,0.1);">
+    <!-- Chat-imessages Window -->
+    <div id="chat-imessages" style="display: none; position: fixed; top: 0; right: 0; width: 50%; height: 100%; background-color: #ffffff; z-index: 1001; box-shadow: -4px 0px 8px rgba(0,0,0,0.1);">
         <div class="imessages-header" style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #ddd;">
             <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="AI Image" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
             <p style="font-size: 18px; margin: 0;">Chat with Vita</p>
             <button id="close-imessages" class="close-chat-button" style="margin-left: auto; background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
         </div>
-        <div id="chatContent" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
-            <!-- 用户消息和 AI 回应将在这里显示 还在更新中：） -->
+        <!-- Chat Content Area with Scroll -->
+        <div id="chatContent" style="flex: 1; padding: 20px; background-color: #f9f9f9; overflow-y: auto; border-radius: 8px; height: calc(100% - 60px); max-height: calc(100% - 100px);">
+            <!-- User messages and AI responses will appear here -->
         </div>
-        <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; border-top: 1px solid #ddd;">
+        <!-- Fixed Input Area at Bottom -->
+        <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; border-top: 1px solid #ddd; position: sticky; bottom: 0; background-color: #ffffff;">
             <input type="text" placeholder="Send a message" id="chatInputImessages" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
-            <button id="sendButtonImessages" class="send-button" style="margin-left: 10px; padding: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Submit</button>
             <button id="voiceButtonImessages" class="voice-button" style="background: none; border: none; cursor: pointer;">
                 <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" style="width: 24px; height: 24px; margin-left: 10px;">
             </button>
@@ -79,15 +79,38 @@ style.innerHTML = `
     flex-direction: column;
 }
 
-.chat-input-area input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+#chatContent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(100% - 60px); /* Keeps content area from overlapping input */
+}
+
+.user-message {
+    text-align: right;
+    color: #333;
+    background-color: #cce5ff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    align-self: flex-end;
+    max-width: 60%;
+}
+
+.ai-message {
+    text-align: left;
+    color: #333;
+    background-color: #e6e6fa;
+    padding: 8px 12px;
+    border-radius: 8px;
+    align-self: flex-start;
+    max-width: 60%;
+}
+
+.error-message {
+    color: red;
 }
 `;
 document.head.appendChild(style);
-
 
 document.getElementById('open-chat').addEventListener('click', function() {
     const chatWindow = document.getElementById('chatWindow');
@@ -107,10 +130,24 @@ document.getElementById('close-chat').addEventListener('click', function() {
     chatIcon.style.display = 'block';
 });
 
-document.getElementById('sendButton').addEventListener('click', function() {
-    const message = document.getElementById('chatInput').value.trim();
-    if (message) {
-        showImessagesWindow(message);
+document.getElementById('chatInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        const message = event.target.value.trim();
+        if (message) {
+            showImessagesWindow(message);
+            event.target.value = '';
+        }
+    }
+});
+
+document.getElementById('chatInputImessages').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        const message = event.target.value.trim();
+        if (message) {
+            appendMessageToChatContent(message, true);
+            sendMessageToAI(message);
+            event.target.value = '';
+        }
     }
 });
 
@@ -119,23 +156,18 @@ document.getElementById('close-imessages').addEventListener('click', function() 
     document.getElementById('chat-icon').style.display = 'block';
 });
 
-// 显示交流窗口并发送消息
 function showImessagesWindow(message) {
     document.getElementById("chatWindow").style.display = "none";
     document.getElementById("chat-imessages").style.display = "block";
-    document.getElementById('chatInputImessages').value = '';
-
 
     const userMessage = document.createElement('p');
     userMessage.textContent = message;
     userMessage.classList.add('user-message');
     document.getElementById('chatContent').appendChild(userMessage);
 
-
     sendMessageToAI(message);
 }
 
-//响应交流func
 function sendMessageToAI(userInput) {
     fetch('http://127.0.0.1:5000/get_response', {
         method: 'POST',
@@ -147,23 +179,28 @@ function sendMessageToAI(userInput) {
     .then(response => response.json())
     .then(data => {
         const aiResponse = data.response;
-        const aiMessage = document.createElement('p');
-        aiMessage.textContent = aiResponse;
-        aiMessage.classList.add('ai-message');
-        document.getElementById('chatContent').appendChild(aiMessage);
+        appendMessageToChatContent(aiResponse, false);
     })
     .catch(error => {
         console.error('Error:', error);
-        const errorMessage = document.createElement('p');
-        errorMessage.textContent = "There was an error. Please try again.";
-        errorMessage.classList.add('error-message');
-        document.getElementById('chatContent').appendChild(errorMessage);
+        const errorMessage = "There was an error. Please try again.";
+        appendMessageToChatContent(errorMessage, false);
     });
 }
 
+function appendMessageToChatContent(message, isUser) {
+    const messageElement = document.createElement('p');
+    messageElement.textContent = message;
+    if (isUser) {
+        messageElement.classList.add('user-message');
+    } else {
+        messageElement.classList.add('ai-message');
+    }
+    const chatContent = document.getElementById('chatContent');
+    chatContent.appendChild(messageElement);
 
-
-
+    chatContent.scrollTop = chatContent.scrollHeight;
+}
 
 // Function to open modal and display content
 function openModal(content) {
@@ -342,54 +379,165 @@ document.getElementById('chat-icon').addEventListener('mouseleave', function() {
     document.getElementById('hover-text').style.display = 'none';
 });
 
-// hightlight func
-document.addEventListener('mouseup', (event) => {
-    const selectedText = window.getSelection().toString();
-    if (selectedText.length > 0 && !chatWidget.contains(event.target)) {
-        highlightSelection();
-        console.log("Captured Highlighted Text:", selectedText);
+
+//highlighted text
+document.addEventListener('mouseup', function(event) {
+    const selectedText = window.getSelection().toString().trim();
+
+    if (selectedText && !document.getElementById('innerPage')) {
+        
+        const innerPage = document.createElement('div');
+        innerPage.id = 'innerPage';
+        innerPage.style.position = 'fixed';
+        innerPage.style.left = '60%';
+        innerPage.style.top = '50%';
+        innerPage.style.transform = 'translate(-50%, -50%)';
+        innerPage.style.width = '400px';
+        innerPage.style.zIndex = '1001';
+        innerPage.style.background = '#fff';
+        innerPage.style.border = '1px solid #ddd';
+        innerPage.style.padding = '10px';
+        innerPage.style.borderRadius = '8px';
+        innerPage.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+        innerPage.style.cursor = 'move';
+        innerPage.innerHTML = `
+            <div style="display: flex; align-items: center;">
+                <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="AI Icon" 
+                     style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
+                <button id="playAudio" style="
+                    border: 1px solid #4A90E2;
+                    background-color: rgba(74, 144, 226, 0.1);
+                    color: #4A90E2;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    margin-right: 10px;
+                ">
+                    🔊 Play the Audio
+                </button>
+                <button id="closeInnerPage" style="background: none; border: none; font-size: 16px; cursor: pointer; margin-left: auto;">&times;</button>
+            </div>
+            <div id="responseContent" style="margin-top: 10px;">Loading response...</div>
+
+            <!-- Buttons Section -->
+            <div style="display: flex; align-items: center; margin-top: 20px;">
+                <!-- Request New Explanation Button -->
+                <button id="requestNewExplanation" style="
+                    display: flex; align-items: center;
+                    background-color: #4A90E2;
+                    color: white;
+                    border: none;
+                    border-radius: 20px;
+                    padding: 10px 15px;
+                    font-size: 14px;
+                    cursor: pointer;
+                    flex: 1;
+                ">
+                    🔄 I still don’t get it, say it another way
+                </button>
+
+                <!-- View More Button -->
+                <button id="viewMore" style="
+                    display: flex; align-items: center;
+                    background-color: transparent;
+                    color: #333;
+                    border: none;
+                    cursor: pointer;
+                    margin-left: 10px;
+                    font-size: 14px;
+                ">
+                    🔍 View more >
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(innerPage);
+
+        document.getElementById('closeInnerPage').addEventListener('click', function() {
+            innerPage.remove();
+        });
+
+        function fetchResponse(query) {
+            fetch('http://127.0.0.1:5000/get_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_input: query }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseContent = document.getElementById('responseContent');
+                responseContent.textContent = data.response;
+                
+                // Play audio functionality
+                document.getElementById('playAudio').addEventListener('click', function() {
+                    const utterance = new SpeechSynthesisUtterance(data.response);
+                    speechSynthesis.cancel(); // Stop any ongoing speech
+                    speechSynthesis.speak(utterance);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('responseContent').textContent = "There was an error. Please try again.";
+            });
+        }
+
+        fetchResponse(selectedText);
+        document.getElementById('requestNewExplanation').addEventListener('click', function() {
+            fetchResponse(`${selectedText} - please explain it in a different way`);
+        });
+
+        document.getElementById('viewMore').addEventListener('click', function() {
+            const responseContent = document.getElementById('responseContent').textContent;
+            const chatImessages = document.getElementById('chat-imessages');
+            chatImessages.style.display = 'block';
+            const chatContent = document.getElementById('chatContent');
+            const userMessage = document.createElement('p');
+
+            userMessage.textContent = selectedText;
+            userMessage.classList.add('user-message');
+            chatContent.appendChild(userMessage);
+
+            const aiMessage = document.createElement('p');
+            aiMessage.textContent = responseContent;
+            aiMessage.classList.add('ai-message');
+            chatContent.appendChild(aiMessage);
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+            innerPage.remove();
+        });
+
+        dragElement(innerPage);
     }
 });
 
-let clickCount = 0;
+// Function to make the innerPage draggable
+function dragElement(element) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    element.onmousedown = dragMouseDown;
 
-document.addEventListener('click', (event) => {
-    if (!event.target.classList.contains('highlighted') && !chatWidget.contains(event.target)) {
-        clickCount++;
-        if (clickCount >= 2) {
-            clearHighlights();
-            clickCount = 0;
-        }
-    } else {
-        clickCount = 0;
+    function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
     }
-});
 
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        element.style.top = (element.offsetTop - pos2) + "px";
+        element.style.left = (element.offsetLeft - pos1) + "px";
+    }
 
-function highlightSelection() {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
-
-    const range = selection.getRangeAt(0);
-    const highlightSpan = document.createElement('span');
-    highlightSpan.classList.add('highlighted');
-    highlightSpan.style.backgroundColor = 'yellow';
-
-    const selectedContents = range.cloneContents();
-    highlightSpan.appendChild(selectedContents);
-
-    range.deleteContents();
-    range.insertNode(highlightSpan);
-    selection.removeAllRanges();
-}
-
-function clearHighlights() {
-    const highlightedElements = document.querySelectorAll('.highlighted');
-    highlightedElements.forEach(element => {
-        const parent = element.parentNode;
-        while (element.firstChild) {
-            parent.insertBefore(element.firstChild, element);
-        }
-        parent.removeChild(element);
-    });
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
 }
