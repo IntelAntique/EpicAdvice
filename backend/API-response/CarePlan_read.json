@@ -1,11 +1,4 @@
 {
-    "link": [
-    {
-    "relation": "self",
-    "url": "https://hostname/instance/api/FHIR/R4/CarePlan/euPz4Gt7e7EQzAOWtokEj9RaVxPEK0dF--1d8qJeqVeYobWHY.bIU6YbHvTG39FyU3"
-    }
-    ],
-    "fullUrl": "https://hostname/instance/api/FHIR/R4/CarePlan/euPz4Gt7e7EQzAOWtokEj9RaVxPEK0dF--1d8qJeqVeYobWHY.bIU6YbHvTG39FyU3",
     "resource": {
     "resourceType": "CarePlan",
     "id": "euPz4Gt7e7EQzAOWtokEj9RaVxPEK0dF--1d8qJeqVeYobWHY.bIU6YbHvTG39FyU3",
@@ -36,9 +29,6 @@
     "subject": {
     "reference": "Patient/ec1rE2FurJlr.s2dHyJ9Jpg3",
     "display": "TestPatient, New"
-    },
-    "encounter": {
-    "reference": "Encounter/eUhfvKMAIuYz9iyCy6wlf3w3"
     },
     "period": {
     "start": "2020-09-22"

@@ -1,0 +1,19 @@
+{
+    "resourceType": "AllergyIntolerance",
+    "id": "eeJxm9Vi8-QmUQuWDhBMklw3",
+    "category": ["medication"],
+    "code": {
+      "coding": [
+        {
+          "code": "9835",
+          "display": "SMALLPOX VACCINE"
+        }
+      ],
+      "text": "SMALLPOX VACCINE"
+    },
+    "patient": {
+      "display": "Lurch, William"
+    },
+    "recordedDate": "2019-04-19"
+  }
+  

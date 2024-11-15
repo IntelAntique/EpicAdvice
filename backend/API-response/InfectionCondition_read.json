@@ -1,0 +1,44 @@
+{
+    "resourceType": "Condition",
+    "id": "ePMnpp6lhpta6YiS9-QsmBA3",
+    "clinicalStatus": {
+      "coding": [
+        {
+          "code": "active",
+          "display": "Active"
+        }
+      ],
+      "text": "Active"
+    },
+    "category": [
+      {
+        "coding": [
+          {
+            "code": "infection",
+            "display": "Infection"
+          }
+        ],
+        "text": "Infection"
+      }
+    ],
+    "code": {
+      "coding": [
+        {
+          "code": "9",
+          "display": "Measles"
+        },
+        {
+          "system": "http://snomed.info/sct",
+          "code": "14189004",
+          "display": "Measles"
+        }
+      ],
+      "text": "Measles"
+    },
+    "subject": {
+      "display": "Dunwoody, Terence"
+    },
+    "onsetDateTime": "2021-02-12",
+    "recordedDate": "2021-02-19T20:39:13Z"
+  }
+  

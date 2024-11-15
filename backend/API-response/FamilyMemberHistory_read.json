@@ -1,0 +1,58 @@
+{
+    "resourceType": "FamilyMemberHistory",
+    "id": "ePM.Qux3IY3tsLDfCmpxnDhhUJ4WWDI.DRtTk-LVsHD03",
+    "patient": {
+      "display": "Smith, Sally"
+    },
+    "date": "2021-07-05",
+    "name": "Paula",
+    "relationship": {
+      "coding": [
+        {
+          "code": "NMTH",
+          "display": "Natural mother"
+        },
+        {
+          "code": "1",
+          "display": "Mother"
+        }
+      ]
+    },
+    "sex": {
+      "coding": [
+        {
+          "code": "female"
+        }
+      ]
+    },
+    "bornDate": "1968-07-05",
+    "deceasedBoolean": false,
+    "note": [
+      {
+        "text": "Estranged"
+      }
+    ],
+    "condition": [
+      {
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "160266009",
+              "display": "No family history of"
+            },
+            {
+              "code": "1702",
+              "display": "Healthy"
+            }
+          ]
+        },
+        "note": [
+          {
+            "text": "Mother is healthy"
+          }
+        ]
+      }
+    ]
+  }
+  

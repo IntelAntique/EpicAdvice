@@ -1,0 +1,49 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      
+      "resource": {
+        "resourceType": "NutritionOrder",
+        "id": "emV2M.3TKuBneTxDOPf2VYUgryLaXH6Qus6BUOZ8Tg9k3",
+        "patient": {
+          "reference": "eFLQ4DCYc6n424WRext9mTQ3",
+          "display": "Patient, Epic"
+        },
+        "dateTime": "2021-07-01T19:42:38Z",
+        "oralDiet": {
+          "type": [
+            {
+              "coding": [
+                {
+                  "code": "3",
+                  "display": "Vegetarian"
+                }
+              ],
+              "text": "Vegetarian"
+            }
+          ],
+          "texture": [
+            {
+              "modifier": {
+                "coding": [
+                  {
+                    "code": "8",
+                    "display": "Pureed"
+                  }
+                ],
+                "text": "Pureed"
+              }
+            }
+          ],
+          "instruction": "GENERAL DIET PLAN"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}

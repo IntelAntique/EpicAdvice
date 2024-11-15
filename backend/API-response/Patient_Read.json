@@ -1,0 +1,108 @@
+{
+    "resourceType": "Patient",
+    "id": "eMMKGfU7AJS5yjSRNjZdLxA3",
+    "extension": [
+      {
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "urn:oid:2.16.840.1.113883.6.99",
+              "code": "en"
+            }
+          ],
+          "text": "English"
+        }
+      },
+      {
+        "valueCode": "F"
+      },
+      {
+        "valueString": "xxx-xx-7418"
+      },
+      {
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "code": "female"
+            }
+          ]
+        }
+      },
+      {
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "code": "female"
+            }
+          ]
+        }
+      },
+      {
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "code": "female"
+            }
+          ]
+        }
+      },
+      {
+        "valueCode": "F"
+      }
+    ],
+    
+    "active": true,
+    "name": [
+      {
+        "use": "usual",
+        "text": "Meiko Lufhir Jr., PhD",
+        "family": "Lufhir",
+        "given": ["Meiko"],
+        "suffix": ["JR.", "PHD"]
+      }
+    ],
+    "telecom": [
+      {
+        "system": "phone",
+        "value": "321-544-2222",
+        "use": "home"
+      },
+      {
+        "system": "phone",
+        "value": "321-841-3333",
+        "use": "work"
+      },
+      {
+        "system": "email",
+        "value": "meikolu.fhir@gmail.com"
+      }
+    ],
+    "gender": "female",
+    "birthDate": "1978-03-22",
+    "address": [
+      {
+        "use": "home",
+        "line": ["100 Main St", "G-442"],
+        "city": "Madison",
+        "state": "WI",
+        "postalCode": "53703",
+        "country": "USA",
+        "district": "DANE"
+      }
+    ],
+    "maritalStatus": {
+      "coding": [
+        {
+          "code": "M",
+          "display": "Married"
+        }
+      ],
+      "text": "Married"
+    },
+    "generalPractitioner": [
+      {
+        "display": "Amber Hxl, MD"
+      }
+    ]
+  }
+  
