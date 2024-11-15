@@ -75,37 +75,41 @@ def record_audio():
 
 @app.route('/audio_response', methods=['POST'])
 def audioResponse():
-    print("Audio response")
-    user_data = get_user_data()
-    gender, age, family_member_history, occupation, nutrition = user_data
+    try:
+        print("Audio response")
+        user_data = get_user_data()
+        gender, age, family_member_history, occupation, nutrition = user_data
 
-    ethnicity = "Caucasian"
-    highlight = False
+        ethnicity = "Caucasian"
+        highlight = False
 
-    sys_ins = f"""
-    You summarize lab reports and medical terms in a way that is:
-    - Appropriate for a {age} year old {gender} child
-    - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
-    - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
-    - Using simple language suitable for a {age} year old {occupation}
-    - Including child-friendly analogies and examples
-    - Avoiding potentially anxiety-triggering medical terminology
-    - Using positive, encouraging language
-    - Breaking down complex concepts into very small, digestible pieces
-    - Using familiar objects and experiences from a {age} year old daily life for comparisons
-    - {"use at most 3 sentences in the entire response" if (highlight) else "at most one paragraph"}
-    """
+        sys_ins = f"""
+        You summarize lab reports and medical terms in a way that is:
+        - Appropriate for a {age} year old {gender} child
+        - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
+        - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
+        - Using simple language suitable for a {age} year old {occupation}
+        - Including child-friendly analogies and examples
+        - Avoiding potentially anxiety-triggering medical terminology
+        - Using positive, encouraging language
+        - Breaking down complex concepts into very small, digestible pieces
+        - Using familiar objects and experiences from a {age} year old daily life for comparisons
+        - {"use at most 3 sentences in the entire response" if (highlight) else "at most one paragraph"}
+        """
 
-    model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
-    question = """
-        The audio file here is my question. Please provide a response.
-    """
-    media_path = pathlib.Path(__file__).parent / "recorded_audio.wav"
-    myfile = genai.upload_file(media_path)
-    
-    response = model.generate_content([myfile, question])
+        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
+        question = """
+            The audio file here is my question. Please provide a response.
+        """
+        media_path = pathlib.Path(__file__).parent / "recorded_audio.wav"
+        myfile = genai.upload_file(media_path)
+        
+        response = model.generate_content([myfile, question])
 
-    return jsonify({'response': response.text})
+        return jsonify({'response': response.text}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/start_recording', methods=['POST'])
 def start_recording():
