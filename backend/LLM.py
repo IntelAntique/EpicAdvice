@@ -73,26 +73,9 @@ def record_audio():
     wf.writeframes(b''.join(frames))
     wf.close()
 
-@app.route('/start_recording', methods=['POST'])
-def start_recording():
-    global recording_thread, is_recording
-    if recording_thread is None or not recording_thread.is_alive():
-        is_recording = True
-        recording_thread = threading.Thread(target=record_audio)
-        recording_thread.start()
-        return jsonify({'status': 'Recording started'})
-    else:
-        return jsonify({'status': 'Recording already in progress'})
-
-@app.route('/stop_recording', methods=['POST'])
-def stop_recording():
-    global is_recording
-    is_recording = False
-    recording_thread.join()
-    return jsonify({'status': 'Recording stopped', 'file_path': output_filename})
-
 @app.route('/audio_response', methods=['POST'])
 def audioResponse():
+    print("Audio response")
     user_data = get_user_data()
     gender, age, family_member_history, occupation, nutrition = user_data
 
@@ -113,17 +96,34 @@ def audioResponse():
     - {"use at most 3 sentences in the entire response" if (highlight) else "at most one paragraph"}
     """
 
-
     model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
     question = """
-    What was said here?
+        The audio file here is my question. Please provide a response.
     """
-    media_path = pathlib.Path(__file__).parent / "Recorded.wav"
+    media_path = pathlib.Path(__file__).parent / "recorded_audio.wav"
     myfile = genai.upload_file(media_path)
     
     response = model.generate_content([myfile, question])
 
     return jsonify({'response': response.text})
+
+@app.route('/start_recording', methods=['POST'])
+def start_recording():
+    global recording_thread, is_recording
+    if recording_thread is None or not recording_thread.is_alive():
+        is_recording = True
+        recording_thread = threading.Thread(target=record_audio)
+        recording_thread.start()
+        return jsonify({'status': 'Recording started'})
+    else:
+        return jsonify({'status': 'Recording already in progress'})
+
+@app.route('/stop_recording', methods=['POST'])
+def stop_recording():
+    global is_recording
+    is_recording = False
+    recording_thread.join()
+    return jsonify({'status': 'Recording stopped', 'file_path': output_filename})
 
 @app.route('/get_response', methods=['POST'])
 def get_response():

@@ -643,10 +643,45 @@ let isRecording = false;
 document.getElementById('toggle-record').addEventListener('click', function() {
     if (isRecording) {
         stopRecording();
+        sendAudioMessage();
     } else {
         startRecording();
     }
 });
+
+function sendAudioMessage() {
+    const chatMessages = document.getElementById('chatMessages');
+
+    const userMessage = document.createElement('p');
+    userMessage.textContent = 'Sending audio message...';
+    userMessage.classList.add('user-message');
+    chatMessages.appendChild(userMessage);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    fetch('http://127.0.0.1:5000/audio_response', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(text => {
+                console.error('Error response:', text);
+                throw new Error('Network response was not ok');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        const aiResponse = data.response;
+        const aiMessage = document.createElement('p');
+        aiMessage.textContent = aiResponse;
+        aiMessage.classList.add('ai-message');
+        chatMessages.appendChild(aiMessage);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+}
 
 function startRecording() {
     isRecording = true;
