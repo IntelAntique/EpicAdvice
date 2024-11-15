@@ -12,7 +12,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.uwhealth.org/*"], //The plugin is only shown on the site bilibili
+      "matches": ["https://www.uwhealth.org/*"], //The plugin is only shown on the site uwhealth
       "js": ["scripts/content.js"],
       "css": ["scripts/page1.css"]
     }
@@ -24,7 +24,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/AIPhoto.png"],
+      "resources": ["images/AIPhoto.png","images/voice.png"],
       "matches": ["<all_urls>"]
     }
   ]
