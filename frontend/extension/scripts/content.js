@@ -371,59 +371,40 @@ document.getElementById('summaryButton').addEventListener('click', function() {
     });
 });
 
-
-
-
 document.getElementById('planButton').addEventListener('click', function() {
     const planDiv = document.createElement('div');
+    planDiv.innerHTML = `
+        <p>Today's Health Plan <span style="float: right; font-size: 10px;">Oct 17, 2024</span></p>
+        <p>🩺 Medication</p>
+        <p><strong>Amoxicillin</strong><br>Take 1 tablet (50mg) by mouth twice a day (once in the morning and once in the evening) for 10 days.</p>
+        <p><strong>Nicotine 14MG/24HR Patch</strong><br>Place 1 patch on the skin (one) time each day at the same time.</p>
+        <p>🌱 Vita’s Care Plan for You</p>
+        <ul>
+            <li>Avoid cold drinks or caffeine, which can irritate your throat.</li>
+            <li>Eat soft, non-spicy foods that are easy on your throat, like soup or yogurt.</li>
+            <li>If your symptoms do not improve in 3–5 days, schedule a follow-up appointment.</li>
+        </ul>
+        <div style="text-align: center; margin-top: 10px;">
+            <button id="closePlan" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+        </div>
+    `;
+    planDiv.style.position = 'fixed';
+    planDiv.style.bottom = '20px';
+    planDiv.style.right = 'calc(40px + 400px)';
+    planDiv.style.zIndex = '1000';
+    planDiv.style.background = '#fff';
+    planDiv.style.padding = '20px';
+    planDiv.style.borderRadius = '8px';
+    planDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+    planDiv.style.width = '400px';
+    planDiv.style.height = '600px';
+    planDiv.style.overflowY = 'auto'; 
 
-    const title = document.createElement('p');
-    title.innerHTML = `Today's Health Plan <span style="float: right; font-size: 10px;">Oct 17, 2024</span>`;
-    planDiv.appendChild(title);
-
-    const medicationHeader = document.createElement('p');
-    medicationHeader.textContent = '🩺 Medication';
-    planDiv.appendChild(medicationHeader);
-
-    const amoxicillin = document.createElement('p');
-    amoxicillin.innerHTML = `<strong>Amoxicillin</strong><br>Take 1 tablet (50mg) by mouth twice a day (once in the morning and once in the evening) for 10 days.`;
-    planDiv.appendChild(amoxicillin);
-
-    const nicotinePatch = document.createElement('p');
-    nicotinePatch.innerHTML = `<strong>Nicotine 14MG/24HR Patch</strong><br>Place 1 patch on the skin (one) time each day at the same time.`;
-    planDiv.appendChild(nicotinePatch);
-
-    const carePlanHeader = document.createElement('p');
-    carePlanHeader.textContent = '🌱 Vita’s Care Plan for You';
-    planDiv.appendChild(carePlanHeader);
-
-    const carePlanList = document.createElement('ul');
-
-    const carePlanItem1 = document.createElement('li');
-    carePlanItem1.textContent = 'Avoid cold drinks or caffeine, which can irritate your throat.';
-    carePlanList.appendChild(carePlanItem1);
-
-    // Add more list items as needed
-    // const carePlanItem2 = document.createElement('li');
-    // carePlanItem2.textContent = 'Another care plan item.';
-    // carePlanList.appendChild(carePlanItem2);
-
-    planDiv.appendChild(carePlanList);
-
-    // Add a close button
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Close';
-    closeButton.style.backgroundColor = '#0d253f'; // Darker blue for the button
-    closeButton.style.color = 'white'; // White text for the button
-    closeButton.style.border = 'none';
-    closeButton.style.padding = '5px 10px';
-    closeButton.style.cursor = 'pointer';
-    closeButton.addEventListener('click', function() {
-        planDiv.remove();
-    });
-    planDiv.appendChild(closeButton);
 
     document.body.appendChild(planDiv);
+    document.getElementById('closePlan').addEventListener('click', function() {
+        planDiv.remove();
+    });
 });
 
 
@@ -587,10 +568,6 @@ async function cropAndSendToBackend() {
 
     selectionBox.style.display = 'none';
 }
-
-//
-// DANGER ZONE: DO NOT MODIFY BELOW THIS LINE
-//
 
 document.addEventListener('mouseup', function(event) {
     const selectedText = window.getSelection().toString().trim();
