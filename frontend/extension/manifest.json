@@ -25,7 +25,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/AIPhoto.png", "scripts/page1.css", "images/*", "scripts/html2canvas.min.js"],
+      "resources": ["scripts/page1.css", "images/*", "scripts/html2canvas.min.js"],
       "matches": ["<all_urls>"]
     }
   ],
