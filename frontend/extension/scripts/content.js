@@ -12,115 +12,71 @@ chatWidget.innerHTML = `
         </button>
 
         <div id="chatWindow" class="chat-window hidden" style="display: none; flex-direction: column;">
-            <div class="chat-header">
-                <h5>Epic Advice</h5>
-                <button id="close-chat" class="close-chat-button">Close</button>
+            <div class="chat-header" style="display: flex; align-items: center; padding: 10px; background-color: #ffffff;">
+                <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+                <p style="margin: 0; font-size: 14px; flex: 1; text-align: left;">
+                    Hi! I'm Vita, your AI health guide. <br> 
+                    Need help understanding something? Just ask me! <br>
+                    How can I assist you today?</p>
+                <button id="close-chat" class="close-chat-button" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
             </div>
-            <div class="chat-messages" id="chatMessages" style="flex: 1; overflow-y: auto; padding: 10px;">
+            <div class="chat-options" style="width: 100%; padding: 10px; display: flex; flex-direction: column; gap: 10px;">
+                <button id="notesButton" class="chat-option" style="background-color: #fddddd; padding: 4px; font-size: 12px; border: 1px solid #f7aaaa; border-radius: 5px; cursor: pointer; width: 40%;">Doctor's notes</button>
+                <button id="summaryButton" class="chat-option" style="background-color: #e0f7e9; padding: 4px; font-size: 12px; border: 1px solid #b2dfdb; border-radius: 5px; cursor: pointer; width: 40%;">Summary</button>
+                <button id="planButton" class="chat-option" style="background-color: #e6e6fa; padding: 4px; font-size: 12px; border: 1px solid #b2b2d8; border-radius: 5px; cursor: pointer; width: 40%;">Current Plan</button>
             </div>
-            <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box;">
-                <input type="text" placeholder="Send messages to AI doctor" id="chatInput" />
-                <button id="sendButton" class="send-button">Submit</button>
+            <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center;">
+                <input type="text" placeholder="Send messages to AI doctor" id="chatInput" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" />
+                <button id="sendButton" class="send-button" style="margin-left: 5px; padding: 8px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">Submit</button>
+                <button id="voiceButton" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
+                    <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" id="chat-icon" style="width: 24px; height: 24px;">
+                </button>
             </div>
-            <div class="chat-options" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; justify-content: space-around;">
-                <button id="notesButton" class="chat-option">Doctor's notes</button>
-                <button id="summaryButton" class="chat-option">Summary</button>
-                <button id="planButton" class="chat-option">Current Plan</button>
-            </div>    
         </div>
     </div>
 
-    <div id="modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <div id="modal-body"></div>
+    <!-- 新的交流窗口 -->
+    <div id="chat-imessages" style="display: none; position: fixed; top: 0; right: 0; width: 50%; height: 100%; background-color: #ffffff; z-index: 1001; overflow-y: auto; padding: 20px; box-shadow: -4px 0px 8px rgba(0,0,0,0.1);">
+        <div class="imessages-header" style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #ddd;">
+            <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="AI Image" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+            <p style="font-size: 18px; margin: 0;">Chat with Vita</p>
+            <button id="close-imessages" class="close-chat-button" style="margin-left: auto; background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+        </div>
+        <div id="chatContent" style="padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+            <!-- 用户消息和 AI 回应将在这里显示 还在更新中：） -->
+        </div>
+        <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; border-top: 1px solid #ddd;">
+            <input type="text" placeholder="Send a message" id="chatInputImessages" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
+            <button id="sendButtonImessages" class="send-button" style="margin-left: 10px; padding: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Submit</button>
+            <button id="voiceButtonImessages" class="voice-button" style="background: none; border: none; cursor: pointer;">
+                <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" style="width: 24px; height: 24px; margin-left: 10px;">
+            </button>
         </div>
     </div>
 `;
+
 document.body.appendChild(chatWidget);
 
 const style = document.createElement('style');
 style.innerHTML = `
-.modal {
-    display: none; 
-    position: fixed; 
-    z-index: 1001; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    overflow: auto; 
-    background-color: rgba(0,0,0,0.5); 
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; 
-    padding: 20px; 
-    border: 1px solid #888;
-    width: 50%; 
-    max-width: 600px;
-    border-radius: 10px;
-}
-
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.close-chat-button {
-    background: none;
-    border: none;
-    color: #aaa;
-    font-size: 18px;
-    cursor: pointer;
-}
-.close-chat-button:hover {
-    color: black;
-}
-
 .chat-icon {
     width: 200px;
     height: 200px;
-}
-
-.hover-text {
-    font-family: Arial, sans-serif;
-    color: #333;
-    position: relative;
-    background: #4a90e2;
-    color: white;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    font-size: 12px;
-    white-space: nowrap;
-    width: auto;
-    max-width: 300px;
-    text-align: center;
 }
 
 .chat-window {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 400px;
-    height: 600px;
+    width: 420px;
+    height: 350px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     overflow: hidden;
     transition: all 0.3s ease;
     display: flex;
+    flex-direction: column;
 }
 
 .chat-input-area input {
@@ -129,54 +85,17 @@ style.innerHTML = `
     border: 1px solid #ddd;
     border-radius: 5px;
 }
-
-.send-button {
-    margin-left: 10px;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.send-button:hover {
-    background-color: #45a049;
-}
-
-.chat-options button {
-    padding: 10px 20px;
-    background-color: #f1f1f1;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.chat-options button:hover {
-    background-color: #e1e1e1;
-}
-
-.highlighted {
-        background-color: yellow;
-    }
 `;
 document.head.appendChild(style);
 
 
 document.getElementById('open-chat').addEventListener('click', function() {
     const chatWindow = document.getElementById('chatWindow');
-    const chatMessages = document.getElementById('chatMessages');
     const chatIcon = document.getElementById('chat-icon');
 
     if (chatWindow.style.display === 'none') {
         chatWindow.style.display = 'flex';
         chatIcon.style.display = 'none';
-        chatMessages.innerHTML = '';
-        const welcomeMessage = document.createElement('p');
-        welcomeMessage.textContent = "We are Epic Advice team. How can I help you?";
-        welcomeMessage.classList.add('ai-message');
-        chatMessages.appendChild(welcomeMessage);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 });
 
@@ -188,58 +107,61 @@ document.getElementById('close-chat').addEventListener('click', function() {
     chatIcon.style.display = 'block';
 });
 
-document.getElementById('sendButton').addEventListener('click', sendMessage);
-document.getElementById('chatInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        sendMessage();
+document.getElementById('sendButton').addEventListener('click', function() {
+    const message = document.getElementById('chatInput').value.trim();
+    if (message) {
+        showImessagesWindow(message);
     }
 });
 
-//most important func!!! do not update!!!
-function sendMessage() {
-    const chatInput = document.getElementById('chatInput');
-    const chatMessages = document.getElementById('chatMessages');
-    const message = chatInput.value.trim();
+document.getElementById('close-imessages').addEventListener('click', function() {
+    document.getElementById('chat-imessages').style.display = 'none';
+    document.getElementById('chat-icon').style.display = 'block';
+});
 
-    if (message !== '') {
-        const userMessage = document.createElement('p');
-        userMessage.textContent = message;
-        userMessage.classList.add('user-message');
-        chatMessages.appendChild(userMessage);
-        chatInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+// 显示交流窗口并发送消息
+function showImessagesWindow(message) {
+    document.getElementById("chatWindow").style.display = "none";
+    document.getElementById("chat-imessages").style.display = "block";
+    document.getElementById('chatInputImessages').value = '';
 
-        fetch('http://127.0.0.1:5000/get_response', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_input: message }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const aiResponse = data.response;
-            const aiMessage = document.createElement('p');
-            aiMessage.textContent = aiResponse;
-            aiMessage.classList.add('ai-message');
-            chatMessages.appendChild(aiMessage);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            const errorMessage = document.createElement('p');
-            errorMessage.textContent = "There was an error. Please try again.";
-            errorMessage.classList.add('error-message');
-            chatMessages.appendChild(errorMessage);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
-    }
+
+    const userMessage = document.createElement('p');
+    userMessage.textContent = message;
+    userMessage.classList.add('user-message');
+    document.getElementById('chatContent').appendChild(userMessage);
+
+
+    sendMessageToAI(message);
 }
+
+//响应交流func
+function sendMessageToAI(userInput) {
+    fetch('http://127.0.0.1:5000/get_response', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_input: userInput }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        const aiResponse = data.response;
+        const aiMessage = document.createElement('p');
+        aiMessage.textContent = aiResponse;
+        aiMessage.classList.add('ai-message');
+        document.getElementById('chatContent').appendChild(aiMessage);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = "There was an error. Please try again.";
+        errorMessage.classList.add('error-message');
+        document.getElementById('chatContent').appendChild(errorMessage);
+    });
+}
+
+
 
 
 
@@ -305,10 +227,7 @@ document.getElementById('notesButton').addEventListener('click', function() {
     noteDiv.style.height = '600px';
     noteDiv.style.overflowY = 'auto';
 
-    // Append to body first
     document.body.appendChild(noteDiv);
-
-    // Now add the event listener
     document.getElementById('closeNote').addEventListener('click', function() {
         noteDiv.remove();
     });
@@ -345,7 +264,7 @@ document.getElementById('summaryButton').addEventListener('click', function() {
         </div>
     `;
 
-    // Apply styles directly to the summaryDiv
+//summary目前的style
     summaryDiv.style.position = 'fixed';
     summaryDiv.style.bottom = '20px';
     summaryDiv.style.right = 'calc(40px + 400px)';
@@ -360,7 +279,6 @@ document.getElementById('summaryButton').addEventListener('click', function() {
 
     document.body.appendChild(summaryDiv);
 
-    // Add close functionality
     document.getElementById('closeSummary').addEventListener('click', function() {
         summaryDiv.remove();
     });
@@ -405,12 +323,6 @@ document.getElementById('planButton').addEventListener('click', function() {
     });
 });
 
-
-// Close modal when clicking the close button
-document.querySelector('.close-button').addEventListener('click', function() {
-    const modal = document.getElementById('modal');
-    modal.style.display = 'none';
-});
 
 // Close modal when clicking outside the modal content
 window.addEventListener('click', function(event) {
