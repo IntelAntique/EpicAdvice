@@ -675,3 +675,4 @@ async function cropAndSendToBackend() {
 
     selectionBox.style.display = 'none';
 }
+}
