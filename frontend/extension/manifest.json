@@ -26,6 +26,7 @@
   "web_accessible_resources": [
     {
       "resources": ["images/AIPhoto.png", "scripts/page1.css", "images/*", "popup/popup.js"],
+
       "matches": ["<all_urls>"]
     }
   ],

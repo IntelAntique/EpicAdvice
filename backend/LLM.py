@@ -25,6 +25,39 @@ DATABASE_PATH = 'DataBase/epicAdvice.db'
 def home():
     return "Welcome to the AI Response Server!"
 
+def audioResponse():
+    user_data = get_user_data()
+    gender, age, family_member_history, occupation, nutrition = user_data
+
+    ethnicity = "Caucasian"
+    highlight = True
+
+    sys_ins = f"""
+    You summarize lab reports and medical terms in a way that is:
+    - Appropriate for a {age} year old {gender} child
+    - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
+    - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
+    - Using simple language suitable for a {age} year old {occupation}
+    - Including child-friendly analogies and examples
+    - Avoiding potentially anxiety-triggering medical terminology
+    - Using positive, encouraging language
+    - Breaking down complex concepts into very small, digestible pieces
+    - Using familiar objects and experiences from a {age} year old daily life for comparisons
+    - {"use at most 3 sentences in the entire response" if (highlight) else "at most one paragraph"}
+    """
+
+
+    model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
+    question = """
+    What was said here?
+    """
+    media_path = pathlib.Path(__file__).parent / "Recorded.wav"
+    myfile = genai.upload_file(media_path)
+    
+    response = model.generate_content([myfile, question])
+
+    return jsonify({'response': response.text})
+
 @app.route('/get_response', methods=['POST'])
 def get_response():
     user_input = request.json.get('user_input')
