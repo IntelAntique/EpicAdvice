@@ -18,7 +18,7 @@ genai.configure(api_key=key)
 
 app = Flask(__name__)
 #CORS(app)
-CORS(app, supports_credentials=True)
+CORS(app)
 
 DATABASE_PATH = 'DataBase/epicAdvice.db'
 @app.route('/')
@@ -145,9 +145,12 @@ def process_image():
     except Exception as e:
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 
+
 @app.route('/upload_screenshot', methods=['POST'])
 def upload_screenshot():
     try:
+        #print("Request headers:", request.headers)
+        #print("Request content type:", request.content_type)
         if 'screenshot' not in request.files:
             return jsonify({"error": "No file part in the request"}), 400
 
@@ -155,7 +158,7 @@ def upload_screenshot():
         if file.filename == '':
             return jsonify({"error": "No selected file"}), 400
 
-        # Save the file to the backend folder
+        # Save the uploaded file to the backend folder
         backend_folder = os.path.dirname(os.path.abspath(__file__))
         if not os.path.exists(backend_folder):
             os.makedirs(backend_folder)
@@ -163,11 +166,36 @@ def upload_screenshot():
         file_path = os.path.join(backend_folder, 'cropped_screenshot.png')
         file.save(file_path)
 
-        return jsonify({"message": "Screenshot saved successfully", "path": file_path}), 200
+        # Upload the saved file to your LLM service
+        image_file = genai.upload_file(path=file_path, display_name="Captured Screenshot")
+        print(f"Image uploaded to LLM with file ID: {image_file}")
+
+        # Fetch user data (assuming get_user_data is defined)
+        #user_data = get_user_data()
+        #gender, age, family_member_history, occupation, nutrition = user_data
+
+        # Generate system instructions for the LLM
+        sys_ins = f"""
+        You summarize healthcare lab reports if there is any in the picture, other indicate user there is nothing to intepret
+        """
+        # "in a way that is:
+        # - Appropriate for a {age} year old {gender} child
+        # - Extra careful to explain concepts related to {family_member_history} in a gentle way
+        # - Mindful of {nutrition} dietary considerations
+        # - Using simple language suitable for a {occupation}""
+
+        # Generate content with the LLM using the uploaded image
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(
+            ["Describe the image with a creative description.", image_file]
+        ).text
+
+        print(response)
+        # Return the generated response
+        return jsonify({"response": response}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
 
 ##helper function to query data from db
 def get_user_data():
