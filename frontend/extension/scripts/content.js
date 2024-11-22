@@ -27,7 +27,7 @@ chatWidget.innerHTML = `
             <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box;">
                 <input type="text" placeholder="Send messages to AI doctor" id="chatInput" />
                 <button id="sendButton" class="send-button">Submit</button>
-                <button id="toggle-record">🎤</button>
+                <button id="toggle-record" style="border-radius: 1rem; border: none;">🎤</button>
             </div>
             <div class="chat-options" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; justify-content: space-around;">
                 <button id="notesButton" class="chat-option">Doctor's notes</button>
