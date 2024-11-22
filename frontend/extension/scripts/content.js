@@ -541,3 +541,20 @@ function dragElement(element) {
     }
 
 }
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.type === "chatbot_response") {
+        console.log(request.response)
+        const chatContent = document.getElementById('chatContent');
+        const aiMessage = document.createElement('p');
+            aiMessage.textContent = request.response;
+            aiMessage.classList.add('ai-message');
+        if (chatContent) {
+            chatContent.appendChild(aiMessage);
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+        
+        //appendMessageToChatContent(request.response, true);
+        //showChatbotResponse("Chatbot: " + request.response);
+    }
+});
