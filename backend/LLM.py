@@ -209,7 +209,16 @@ def upload_screenshot():
 
         # Generate system instructions for the LLM
         sys_ins = f"""
-        You summarize healthcare lab reports if there is any in the picture, other indicate user there is nothing to intepret
+        You are provided with a screenshot that may contain healthcare lab reports or medical charts. Your job is to:
+        1. Identify if the screenshot contains healthcare information.
+        2. If it does, provide a detailed summary of the report including:
+            - Patient details (if visible)
+            - Test results and observations
+            - Any important metrics, such as blood sugar levels, cholesterol levels, etc.
+            - Summarize in a way that a non-medical professional can understand.
+        3. If there is no identifiable medical information, inform the user that no medical chart was found.
+
+        Use simple and clear language, and ensure all medical jargon is explained in layman's terms.
         """
         # "in a way that is:
         # - Appropriate for a {age} year old {gender} child
@@ -218,7 +227,7 @@ def upload_screenshot():
         # - Using simple language suitable for a {occupation}""
 
         # Generate content with the LLM using the uploaded image
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
         response = model.generate_content(
             ["Describe the image with a creative description.", image_file]
         ).text
