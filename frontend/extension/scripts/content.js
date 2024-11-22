@@ -27,7 +27,7 @@ chatWidget.innerHTML = `
             <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box;">
                 <input type="text" placeholder="Send messages to AI doctor" id="chatInput" />
                 <button id="sendButton" class="send-button">Submit</button>
-                <button id="toggle-record">Start Recording</button>
+                <button id="toggle-record">🎤</button>
             </div>
             <div class="chat-options" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; justify-content: space-around;">
                 <button id="notesButton" class="chat-option">Doctor's notes</button>
@@ -161,6 +161,10 @@ style.innerHTML = `
 
 .chat-options button:hover {
     background-color: #e1e1e1;
+}
+
+.ai-message {
+    font-size: 0.9rem; /* Adjust the size as needed */
 }
 `;
 document.head.appendChild(style);
@@ -685,7 +689,8 @@ function sendAudioMessage() {
 
 function startRecording() {
     isRecording = true;
-    document.getElementById('toggle-record').textContent = 'Stop Recording';
+    document.getElementById('toggle-record').textContent = '🎤';
+    document.getElementById('toggle-record').style.opacity = "0.5";
 
     fetch('http://127.0.0.1:5000/start_recording', {
         method: 'POST',
@@ -701,7 +706,8 @@ function startRecording() {
 
 function stopRecording() {
     isRecording = false;
-    document.getElementById('toggle-record').textContent = 'Start Recording';
+    document.getElementById('toggle-record').textContent = '🎤';
+    document.getElementById('toggle-record').style.opacity = "1"
 
     fetch('http://127.0.0.1:5000/stop_recording', {
         method: 'POST',

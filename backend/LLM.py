@@ -38,6 +38,7 @@ def home():
 recording_thread = None
 is_recording = False
 frames = []
+recording_complete = threading.Event()
 
 chunk = 1024
 format = pyaudio.paInt16
@@ -73,10 +74,13 @@ def record_audio():
     wf.writeframes(b''.join(frames))
     wf.close()
 
+    recording_complete.set() 
+
 @app.route('/audio_response', methods=['POST'])
 def audioResponse():
     try:
         print("Audio response")
+        recording_complete.wait()
         user_data = get_user_data()
         gender, age, family_member_history, occupation, nutrition = user_data
 
@@ -116,6 +120,7 @@ def start_recording():
     global recording_thread, is_recording
     if recording_thread is None or not recording_thread.is_alive():
         is_recording = True
+        recording_complete.clear()
         recording_thread = threading.Thread(target=record_audio)
         recording_thread.start()
         return jsonify({'status': 'Recording started'})
