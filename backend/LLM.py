@@ -110,74 +110,6 @@ def upload_image():
 
 
 
-@app.route('/process_image', methods=['POST'])
-def process_image():
-    data = request.json.get('image')
-    try:
-        if not data:
-            return jsonify({"error": "No image data provided"}), 400
-
-        # Remove the "data:image/png;base64," prefix if present
-        if data.startswith('data:image'):
-            data = data.split(',')[1]
-
-        #Decode the base64 image data
-        try:
-            image_data = base64.b64decode(data)
-            image = Image.open(BytesIO(image_data))
-        except Exception as e:
-            return jsonify({"error": f"Failed to decode image data: {str(e)}"}), 400
-
-        #Save the image to a file
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        image_path = os.path.join(current_dir, 'received_image.png')
-        try:
-            image.save(image_path)
-        except Exception as e:
-            return jsonify({"error": f"Failed to save image: {str(e)}"}), 500
-
-        try:
-            if not os.path.exists(image_path):
-                return jsonify({"error": f"Image file not found at {image_path}"}), 404
-
-            image_file = genai.upload_file(path=image_path, display_name="Sample drawing")
-        except Exception as e:
-            return jsonify({"error": f"Failed to upload image to genai: {str(e)}"}), 500
-
-        #Fetch user data and generate system instructions
-        try:
-            user_data = get_user_data()
-            gender, age, family_member_history, occupation, nutrition = user_data
-
-            sys_ins = f"""
-            You summarize lab reports in a way that is:
-            - Appropriate for a {age} year old {gender} child
-            - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
-            - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
-            - Using simple language suitable for a {age} year old {occupation}
-            - Including child-friendly analogies and examples
-            - Avoiding potentially anxiety-triggering medical terminology
-            - Using positive, encouraging language
-            - Breaking down complex concepts into very small, digestible pieces
-            - Using familiar objects and experiences from a {age} year old daily life for comparisons
-            """
-        except Exception as e:
-            return jsonify({"error": f"Error fetching user data: {str(e)}"}), 500
-
-        #Generate a response using the LLM
-        try:
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            response = model.generate_content(
-                ["Describe the image with a creative description.", image_file]
-            ).text
-        except Exception as e:
-            return jsonify({"error": f"Error generating content with LLM: {str(e)}"}), 500
-
-        # Return the LLM response
-        return jsonify({"response": response}), 200
-    except Exception as e:
-        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
-
 
 @app.route('/upload_screenshot', methods=['POST'])
 def upload_screenshot():
@@ -201,7 +133,7 @@ def upload_screenshot():
 
         # Upload the saved file to your LLM service
         image_file = genai.upload_file(path=file_path, display_name="Captured Screenshot")
-        print(f"Image uploaded to LLM with file ID: {image_file}")
+        #print(f"Image uploaded to LLM with file ID: {image_file}")
 
         # Fetch user data (assuming get_user_data is defined)
         #user_data = get_user_data()
@@ -231,6 +163,8 @@ def upload_screenshot():
         response = model.generate_content(
             ["Describe the image with a creative description.", image_file]
         ).text
+
+
 
         print(response)
         # Return the generated response
