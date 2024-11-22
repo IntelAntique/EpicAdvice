@@ -540,139 +540,21 @@ function dragElement(element) {
         document.onmousemove = null;
     }
 
+}
 
-// functions for taking pictures
-let stream;
-let startX, startY, endX, endY;
-let isSelecting = false;
-const selectionBox = document.createElement('div');
-
-// Create a button to start the capture process
-const captureButton = document.createElement('button');
-captureButton.id = 'capture-button';
-captureButton.textContent = 'Capture Screenshot';
-captureButton.style.position = 'fixed';
-captureButton.style.bottom = '20px';
-captureButton.style.left = '20px';
-captureButton.style.zIndex = '9999';
-captureButton.style.padding = '10px';
-captureButton.style.backgroundColor = '#4CAF50';
-captureButton.style.color = 'white';
-captureButton.style.border = 'none';
-captureButton.style.borderRadius = '5px';
-captureButton.style.cursor = 'pointer';
-document.body.appendChild(captureButton);
-
-captureButton.addEventListener('click', async () => {
-    await startScreenCapture();
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.type === "chatbot_response") {
+        console.log(request.response)
+        const chatContent = document.getElementById('chatContent');
+        const aiMessage = document.createElement('p');
+            aiMessage.textContent = request.response;
+            aiMessage.classList.add('ai-message');
+        if (chatContent) {
+            chatContent.appendChild(aiMessage);
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+        
+        //appendMessageToChatContent(request.response, true);
+        //showChatbotResponse("Chatbot: " + request.response);
+    }
 });
-
-selectionBox.id = 'selection-box';
-selectionBox.style.position = 'absolute';
-selectionBox.style.border = '2px dashed #00f';
-selectionBox.style.display = 'none';
-selectionBox.style.pointerEvents = 'none';
-document.body.appendChild(selectionBox);
-
-async function startScreenCapture() {
-    try {
-        // Capture the screen using the Screen Capture API
-        stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-        const track = stream.getVideoTracks()[0];
-        const imageCapture = new ImageCapture(track);
-        const bitmap = await imageCapture.grabFrame();
-
-        // Draw the captured screen on a canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = bitmap.width;
-        canvas.height = bitmap.height;
-        const context = canvas.getContext('2d');
-        context.drawImage(bitmap, 0, 0);
-        
-        // Allow user to select an area
-        document.addEventListener('mousedown', startSelection);
-        document.addEventListener('mouseup', endSelection);
-        
-        // Store the canvas for cropping later
-        captureCanvas = canvas;
-        captureContext = context;
-    } catch (err) {
-        console.error('Error capturing screen:', err);
-    }
-}
-
-function startSelection(event) {
-    isSelecting = true;
-    startX = event.clientX;
-    startY = event.clientY;
-    selectionBox.style.left = `${startX}px`;
-    selectionBox.style.top = `${startY}px`;
-    selectionBox.style.width = '0px';
-    selectionBox.style.height = '0px';
-    selectionBox.style.display = 'block';
-
-    document.addEventListener('mousemove', resizeSelection);
-}
-
-function resizeSelection(event) {
-    if (!isSelecting) return;
-    const width = event.clientX - startX;
-    const height = event.clientY - startY;
-    selectionBox.style.width = `${Math.abs(width)}px`;
-    selectionBox.style.height = `${Math.abs(height)}px`;
-    selectionBox.style.left = `${Math.min(startX, event.clientX)}px`;
-    selectionBox.style.top = `${Math.min(startY, event.clientY)}px`;
-}
-
-function endSelection(event) {
-    isSelecting = false;
-    endX = event.clientX;
-    endY = event.clientY;
-
-    document.removeEventListener('mousemove', resizeSelection);
-    document.removeEventListener('mousedown', startSelection);
-    document.removeEventListener('mouseup', endSelection);
-
-    // Crop the selected area and send to backend
-    cropAndSendToBackend();
-}
-
-async function cropAndSendToBackend() {
-    const [x, y, width, height] = [
-        Math.min(startX, endX),
-        Math.min(startY, endY),
-        Math.abs(endX - startX),
-        Math.abs(endY - startY)
-    ];
-
-    // Create a cropped canvas
-    const croppedCanvas = document.createElement('canvas');
-    croppedCanvas.width = width;
-    croppedCanvas.height = height;
-    const croppedContext = croppedCanvas.getContext('2d');
-    croppedContext.drawImage(captureCanvas, x, y, width, height, 0, 0, width, height);
-
-    // Convert the cropped canvas to a Blob
-    const blob = await new Promise((resolve) => croppedCanvas.toBlob(resolve, 'image/png'));
-
-    // Stop the screen capture stream
-    stream.getTracks().forEach(track => track.stop());
-
-    // Upload the cropped image to the backend
-    const formData = new FormData();
-    formData.append('screenshot', blob, 'cropped_screenshot.png');
-
-    try {
-        const response = await fetch('http://127.0.0.1:5000/upload_screenshot', {
-            method: 'POST',
-            body: formData
-        });
-        const result = await response.json();
-        console.log('Upload successful:', result);
-    } catch (error) {
-        console.error('Failed to upload screenshot:', error);
-    }
-
-    selectionBox.style.display = 'none';
-}
-}

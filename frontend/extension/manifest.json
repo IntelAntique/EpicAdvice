@@ -3,8 +3,11 @@
   "name": "Chatbot Widget",
   "version": "1.0",
   "permissions": ["activeTab", "scripting", "tabs","webRequest", "browsingData", "storage", "downloads"],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "action": {
-    "default_popup": "hello.html",
+    "default_popup": "popup/popup.html",
     "default_icon": "hello.png"
   },
   "background": {
@@ -13,7 +16,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.uwhealth.org/*"], //The plugin is only shown on the site bilibili
-      "js": ["scripts/html2canvas.min.js","scripts/content.js"],
+      "js": ["popup/popup.js","scripts/content.js"],
       "css": ["scripts/page1.css"],
       "run_at": "document_end"
     }
@@ -25,7 +28,8 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["scripts/page1.css", "images/*", "scripts/html2canvas.min.js"],
+      "resources": ["images/AIPhoto.png", "scripts/page1.css", "images/*", "popup/popup.js"],
+
       "matches": ["<all_urls>"]
     }
   ],
