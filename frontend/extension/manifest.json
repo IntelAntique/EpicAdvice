@@ -15,9 +15,10 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.uwhealth.org/*"], //The plugin is only shown on the site bilibili
-      "js": ["popup/popup.js","scripts/content.js"],
+      "matches": ["https://www.uwhealth.org/*"], //The plugin is only shown on the site uwhealth
+      "js": ["dom-to-image.js","scripts/content.js","html2canvas.min.js"],
       "css": ["scripts/page1.css"],
+      "type": "module",
       "run_at": "document_end"
     }
   ],
@@ -28,13 +29,14 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/AIPhoto.png", "scripts/page1.css", "images/*", "popup/popup.js"],
+      "resources": ["images/AIPhoto.png", "scripts/page1.css", "images/*", "popup/popup.js" , "background.js" , "scripts/content.js"],
 
       "matches": ["<all_urls>"]
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self';"
-  }
+  "extension_pages": "script-src 'self'; object-src 'self'; img-src 'self';"
+}
+
 }
 

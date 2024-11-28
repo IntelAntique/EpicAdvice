@@ -30,6 +30,9 @@ chatWidget.innerHTML = `
                 <button id="voiceButton" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
                     <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" id="chat-icon" style="width: 24px; height: 24px;">
                 </button>
+                <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
+                    <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen" id="chat-icon" style="width: 24px; height: 24px;">
+                </button>
             </div>
         </div>
     </div>
@@ -50,6 +53,9 @@ chatWidget.innerHTML = `
             <input type="text" placeholder="Send a message" id="chatInputImessages" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
             <button id="voiceButtonImessages" class="voice-button" style="background: none; border: none; cursor: pointer;">
                 <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" style="width: 24px; height: 24px; margin-left: 10px;">
+            </button>
+            <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
+                    <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen" id="chat-icon" style="width: 24px; height: 24px;">
             </button>
         </div>
     </div>
@@ -558,3 +564,94 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         //showChatbotResponse("Chatbot: " + request.response);
     }
 });
+// Existing code omitted for brevity...
+
+//截图：）
+document.getElementById('screenButton').addEventListener('click', function() {
+    startScreenCaptureWithSelection();
+});
+
+function startScreenCaptureWithSelection() {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.zIndex = '10000';
+    overlay.style.cursor = 'crosshair';
+    document.body.appendChild(overlay);
+
+    let startX, startY, selectionBox;
+
+    overlay.addEventListener('mousedown', function (e) {
+        startX = e.clientX;
+        startY = e.clientY;
+        selectionBox = document.createElement('div');
+        selectionBox.style.position = 'absolute';
+        selectionBox.style.border = '2px dashed #fff';
+        selectionBox.style.left = `${startX}px`;
+        selectionBox.style.top = `${startY}px`;
+        overlay.appendChild(selectionBox);
+    });
+
+    overlay.addEventListener('mousemove', function (e) {
+        if (selectionBox) {
+            const currentX = e.clientX;
+            const currentY = e.clientY;
+            selectionBox.style.width = `${Math.abs(currentX - startX)}px`;
+            selectionBox.style.height = `${Math.abs(currentY - startY)}px`;
+            selectionBox.style.left = `${Math.min(startX, currentX)}px`;
+            selectionBox.style.top = `${Math.min(startY, currentY)}px`;
+        }
+    });
+
+    overlay.addEventListener('mouseup', function (e) {
+        const endX = e.clientX;
+        const endY = e.clientY;
+        document.body.removeChild(overlay);
+
+        // Calculate the selected area
+        const rect = {
+            left: Math.min(startX, endX),
+            top: Math.min(startY, endY),
+            width: Math.abs(endX - startX),
+            height: Math.abs(endY - startY)
+        };
+
+        captureSelectedArea(rect);
+    });
+}
+
+function captureSelectedArea(rect) {
+    html2canvas(document.body, {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY
+    }).then(canvas => {
+        canvas.toBlob(blob => {
+            const formData = new FormData();
+            formData.append('screenshot', blob, 'screenshot.png');
+
+            fetch('http://127.0.0.1:5000/upload_screenshot', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Screenshot uploaded successfully');
+                } else {
+                    console.error('Failed to upload screenshot');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }, 'image/png');
+    }).catch(error => {
+        console.error('Error capturing selected area:', error);
+    });
+}
+
