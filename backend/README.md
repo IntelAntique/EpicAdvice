@@ -49,10 +49,14 @@ Users Table
  **Install dependencies:**
     Make sure the required packages are installed:
 
+    brew install portaudio
+
+
     pip install flask flask-cors python-dotenv google-generativeai
     pip install flask pillow pytesseract
     brew install tesseract
     pip install pillow
+    pip install pyaudio keyboard
 
 
 ## Environment Setup
