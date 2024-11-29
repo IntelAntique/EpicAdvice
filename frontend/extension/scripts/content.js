@@ -25,9 +25,10 @@ chatWidget.innerHTML = `
                 <button id="summaryButton" class="chat-option" style="background-color: #e0f7e9; padding: 4px; font-size: 12px; border: 1px solid #b2dfdb; border-radius: 5px; cursor: pointer; width: 40%;">Summary</button>
                 <button id="planButton" class="chat-option" style="background-color: #e6e6fa; padding: 4px; font-size: 12px; border: 1px solid #b2b2d8; border-radius: 5px; cursor: pointer; width: 40%;">Current Plan</button>
             </div>
+
             <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; position: sticky; bottom: 0; background-color: #ffffff;">
                 <input type="text" placeholder="Send messages to AI doctor" id="chatInput" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" />
-                <button id="voiceButton" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
+                <button id="toggle-record" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
                     <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" id="chat-icon" style="width: 24px; height: 24px;">
                 </button>
                 <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
@@ -115,6 +116,10 @@ style.innerHTML = `
 .error-message {
     color: red;
 }
+
+.ai-message {
+    font-size: 0.9rem; /* Adjust the size as needed */
+}
 `;
 document.head.appendChild(style);
 
@@ -145,6 +150,53 @@ document.getElementById('chatInput').addEventListener('keypress', function(event
         }
     }
 });
+
+
+// modifying as part of the project integration
+//most important func!!! do not update!!!
+function sendMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const message = chatInput.value.trim();
+
+    if (message !== '') {
+        const userMessage = document.createElement('p');
+        userMessage.textContent = message;
+        userMessage.classList.add('user-message');
+        chatMessages.appendChild(userMessage);
+        chatInput.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;        
+        
+        fetch('http://127.0.0.1:5000/get_response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_input: message }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.log(response.json())
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const aiResponse = data.response;
+            const aiMessage = document.createElement('p');
+            aiMessage.textContent = aiResponse;
+            aiMessage.classList.add('ai-message');
+            chatMessages.appendChild(aiMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const errorMessage = document.createElement('p');
+            errorMessage.textContent = "There was an error. Please try again.";
+            errorMessage.classList.add('error-message');
+            chatMessages.appendChild(errorMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
 
 document.getElementById('chatInputImessages').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
@@ -326,9 +378,6 @@ document.getElementById('summaryButton').addEventListener('click', function() {
         summaryDiv.remove();
     });
 });
-
-
-
 
 document.getElementById('planButton').addEventListener('click', function() {
     const planDiv = document.createElement('div');
@@ -547,6 +596,155 @@ function dragElement(element) {
     }
 
 }
+
+document.addEventListener('mouseup', function(event) {
+    const selectedText = window.getSelection().toString().trim();
+    if (selectedText && event.target.tagName !== 'BUTTON') {
+        fetch('http://127.0.0.1:5000/get_response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_input: selectedText, highlight: true }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Error response:', text);
+                    throw new Error('Network response was not ok');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            const aiResponse = data.response;
+            showModal(event.pageX, event.pageY, aiResponse);
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+    }
+});
+
+function showModal(x, y, message) {
+    const modal = document.createElement('div');
+    modal.style.position = 'absolute';
+    modal.style.left = `${x}px`;
+    modal.style.top = `${y}px`;
+    modal.style.width = '25%'; // Set the width to a quarter of the screen
+    modal.style.padding = '10px';
+    modal.style.backgroundColor = '#1e3a5f'; // Dark cool blue background
+    modal.style.color = 'white'; // Bright white text
+    modal.style.border = '1px solid #0d253f'; // Slightly darker border
+    modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+    modal.style.zIndex = 1000;
+    modal.style.transition = 'opacity 0.5s';
+    modal.style.opacity = 0;
+
+    const messageParagraph = document.createElement('p');
+    messageParagraph.textContent = message;
+    modal.appendChild(messageParagraph);
+
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Close';
+    closeButton.style.backgroundColor = '#0d253f'; // Darker blue for the button
+    closeButton.style.color = 'white'; // White text for the button
+    closeButton.style.border = 'none';
+    closeButton.style.padding = '5px 10px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.onclick = function() {
+        modal.style.opacity = 0;
+        setTimeout(() => {
+            document.body.removeChild(modal);
+        }, 500);
+    };
+    modal.appendChild(closeButton);
+
+    document.body.appendChild(modal);
+    setTimeout(() => {
+        modal.style.opacity = 1;
+    }, 0);
+}
+
+let isRecording = false;
+
+document.getElementById('toggle-record').addEventListener('click', function() {
+    if (isRecording) {
+        stopRecording();
+        sendAudioMessage();
+    } else {
+        startRecording();
+    }
+});
+
+function sendAudioMessage() {
+    const chatMessages = document.getElementById('chatMessages');
+
+    const userMessage = document.createElement('p');
+    userMessage.textContent = 'Sending audio message...';
+    userMessage.classList.add('user-message');
+    chatMessages.appendChild(userMessage);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    fetch('http://127.0.0.1:5000/audio_response', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(text => {
+                console.error('Error response:', text);
+                throw new Error('Network response was not ok');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        const aiResponse = data.response;
+        const aiMessage = document.createElement('p');
+        aiMessage.textContent = aiResponse;
+        aiMessage.classList.add('ai-message');
+        chatMessages.appendChild(aiMessage);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+}
+
+function startRecording() {
+    isRecording = true;
+    document.getElementById('toggle-record').textContent = '🎤';
+    document.getElementById('toggle-record').style.opacity = "0.5";
+
+    fetch('http://127.0.0.1:5000/start_recording', {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.status);
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+}
+
+function stopRecording() {
+    isRecording = false;
+    document.getElementById('toggle-record').textContent = '🎤';
+    document.getElementById('toggle-record').style.opacity = "1"
+
+    fetch('http://127.0.0.1:5000/stop_recording', {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.status);
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+}
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "chatbot_response") {
