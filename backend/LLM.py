@@ -230,7 +230,6 @@ def upload_screenshot():
         Use simple and clear language, and ensure all medical jargon is explained in layman's terms.
         """
         # "in a way that is:
-        # - Appropriate for a {age} year old {gender} child
         # - Extra careful to explain concepts related to {family_member_history} in a gentle way
         # - Mindful of {nutrition} dietary considerations
         # - Using simple language suitable for a {occupation}""
@@ -293,8 +292,41 @@ def get_user_data():
         print(f"Database error: {e}")
         return None
     
-def process_image_with_llm():
-    return None
+@app.route('/health_summary_pdf', methods=['POST'])
+def process_pdf():
+    try:
+        backend_folder = os.path.dirname(os.path.abspath(__file__))
+        pdf_filename = 'Doctor_Progress_Notes.pdf'  
+        file_path = os.path.join(backend_folder, pdf_filename)
+
+        if not os.path.exists(file_path):
+            return jsonify({"error": "File not found"}), 404
+
+        pdf_file = genai.upload_file(path=file_path, display_name="Uploaded PDF")
+        print(f"PDF uploaded to LLM with file ID: {pdf_file}")
+
+        sys_ins = f"""
+        You are provided with a PDF document that may contain healthcare lab reports or medical charts. Your job is to:
+        1. Identify if the PDF contains healthcare information.
+        2. If it does, provide a detailed summary of the document, including:
+            - Patient details (if visible)
+            - Test results and observations
+            - Any important metrics, such as blood sugar levels, cholesterol levels, etc.
+            - Summarize in a way that a non-medical professional can understand.
+        3. If there is no identifiable medical information, inform the user that no medical chart was found.
+
+        Use simple and clear language, and ensure all medical jargon is explained in layman's terms.
+        """
+
+        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
+        response = model.generate_content([pdf_file]).text
+
+        print(response)
+
+        return jsonify({"response": response}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
