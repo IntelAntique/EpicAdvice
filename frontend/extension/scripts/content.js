@@ -28,11 +28,11 @@ chatWidget.innerHTML = `
 
             <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; position: sticky; bottom: 0; background-color: #ffffff;">
                 <input type="text" placeholder="Send messages to AI doctor" id="chatInput" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" />
-                <button id="toggle-record" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
-                    <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" id="chat-icon" style="width: 24px; height: 24px;">
+                <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 10px;">
+                    <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen Icon" style="width: 24px; height: 24px;">
                 </button>
-                <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
-                    <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen" id="chat-icon" style="width: 24px; height: 24px;">
+                <button id="toggle-record" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 10px;">
+                    <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice Icon" style="width: 24px; height: 24px;">
                 </button>
             </div>
         </div>
@@ -51,14 +51,35 @@ chatWidget.innerHTML = `
         </div>
         <!-- Fixed Input Area at Bottom -->
         <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; border-top: 1px solid #ddd; position: sticky; bottom: 0; background-color: #ffffff;">
-            <input type="text" placeholder="Send a message" id="chatInputImessages" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
-            <button id="voiceButton" class="voice-button" style="background: none; border: none; cursor: pointer;">
-                <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" style="width: 24px; height: 24px; margin-left: 10px;">
+            <input 
+                type="text" 
+                placeholder="Send a message" 
+                id="chatInputImessages" 
+                style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; margin-right: 10px;" 
+            />
+            <button 
+                id="toggle-record" 
+                class="voice-button" 
+                style="background: none; border: none; cursor: pointer; flex: 0;">
+                <img 
+                    src="${chrome.runtime.getURL("images/voice.png")}" 
+                    alt="Voice" 
+                    style="width: 24px; height: 24px; margin-left: 10px;" 
+                />
             </button>
-            <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
-                    <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen" id="chat-icon" style="width: 24px; height: 24px;">
+            <button 
+                id="screenButton" 
+                class="screen-button" 
+                style="background: none; border: none; cursor: pointer; margin-left: 5px; flex: 0;">
+                <img 
+                    src="${chrome.runtime.getURL("images/screenshot.png")}" 
+                    alt="Screen" 
+                    id="chat-icon" 
+                    style="width: 24px; height: 24px;" 
+                />
             </button>
         </div>
+
     </div>
 `;
 
