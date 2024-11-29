@@ -25,11 +25,15 @@ chatWidget.innerHTML = `
                 <button id="summaryButton" class="chat-option" style="background-color: #e0f7e9; padding: 4px; font-size: 12px; border: 1px solid #b2dfdb; border-radius: 5px; cursor: pointer; width: 40%;">Summary</button>
                 <button id="planButton" class="chat-option" style="background-color: #e6e6fa; padding: 4px; font-size: 12px; border: 1px solid #b2b2d8; border-radius: 5px; cursor: pointer; width: 40%;">Current Plan</button>
             </div>
-            
-            <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box;">
-                <input type="text" placeholder="Send messages to AI doctor" id="chatInput" />
-                <button id="sendButton" class="send-button">Submit</button>
-                <button id="toggle-record" style="border-radius: 1rem; border: none;">🎤</button>
+
+            <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; position: sticky; bottom: 0; background-color: #ffffff;">
+                <input type="text" placeholder="Send messages to AI doctor" id="chatInput" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" />
+                <button id="toggle-record" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
+                    <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" id="chat-icon" style="width: 24px; height: 24px;">
+                </button>
+                <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
+                    <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen" id="chat-icon" style="width: 24px; height: 24px;">
+                </button>
             </div>
         </div>
     </div>
@@ -48,8 +52,11 @@ chatWidget.innerHTML = `
         <!-- Fixed Input Area at Bottom -->
         <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; border-top: 1px solid #ddd; position: sticky; bottom: 0; background-color: #ffffff;">
             <input type="text" placeholder="Send a message" id="chatInputImessages" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
-            <button id="voiceButtonImessages" class="voice-button" style="background: none; border: none; cursor: pointer;">
+            <button id="voiceButton" class="voice-button" style="background: none; border: none; cursor: pointer;">
                 <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" style="width: 24px; height: 24px; margin-left: 10px;">
+            </button>
+            <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
+                    <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen" id="chat-icon" style="width: 24px; height: 24px;">
             </button>
         </div>
     </div>
@@ -755,3 +762,126 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         //showChatbotResponse("Chatbot: " + request.response);
     }
 });
+// Existing code omitted for brevity...
+
+//截图：）
+document.getElementById('screenButton').addEventListener('click', function() {
+    startScreenCaptureWithSelection();
+});
+
+function startScreenCaptureWithSelection() {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.zIndex = '10000';
+    overlay.style.cursor = 'crosshair';
+    document.body.appendChild(overlay);
+
+    let startX, startY, selectionBox;
+
+    overlay.addEventListener('mousedown', function (e) {
+        startX = e.clientX;
+        startY = e.clientY;
+        selectionBox = document.createElement('div');
+        selectionBox.style.position = 'absolute';
+        selectionBox.style.border = '2px dashed #fff';
+        selectionBox.style.left = `${startX}px`;
+        selectionBox.style.top = `${startY}px`;
+        overlay.appendChild(selectionBox);
+    });
+
+    overlay.addEventListener('mousemove', function (e) {
+        if (selectionBox) {
+            const currentX = e.clientX;
+            const currentY = e.clientY;
+            selectionBox.style.width = `${Math.abs(currentX - startX)}px`;
+            selectionBox.style.height = `${Math.abs(currentY - startY)}px`;
+            selectionBox.style.left = `${Math.min(startX, currentX)}px`;
+            selectionBox.style.top = `${Math.min(startY, currentY)}px`;
+        }
+    });
+
+    overlay.addEventListener('mouseup', function (e) {
+        const endX = e.clientX;
+        const endY = e.clientY;
+        document.body.removeChild(overlay);
+        
+        const rect = {
+            left: Math.min(startX, endX),
+            top: Math.min(startY, endY),
+            width: Math.abs(endX - startX),
+            height: Math.abs(endY - startY)
+        };
+
+        captureSelectedArea(rect);
+    });
+}
+
+function captureSelectedArea(rect) {
+    html2canvas(document.body, {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY
+    }).then(canvas => {
+        canvas.toBlob(blob => {
+            const formData = new FormData();
+            formData.append('screenshot', blob, 'screenshot.png');
+
+            const chatImessages = document.getElementById('chat-imessages');
+            chatImessages.style.display = 'block';
+
+            const chatContent = document.getElementById('chatContent');
+            const imgElement = document.createElement('img');
+            imgElement.src = URL.createObjectURL(blob);
+            imgElement.style.maxWidth = '100%';
+            imgElement.style.border = '1px solid #ddd';
+            imgElement.style.borderRadius = '8px';
+            imgElement.style.marginBottom = '10px';
+            chatContent.appendChild(imgElement);
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+            fetch('http://127.0.0.1:5000/upload_screenshot', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.response) {
+                      const aiMessage = document.createElement('p');
+                      aiMessage.textContent = data.response;
+                      aiMessage.classList.add('ai-message');
+                      chatContent.appendChild(aiMessage);
+                      chatContent.scrollTop = chatContent.scrollHeight;
+                  } else {
+                      const errorMessage = document.createElement('p');
+                      errorMessage.textContent = 'AI did not return a response.';
+                      errorMessage.classList.add('error-message');
+                      chatContent.appendChild(errorMessage);
+                      chatContent.scrollTop = chatContent.scrollHeight;
+                  }
+              }).catch(error => {
+                  console.error('Error uploading screenshot:', error);
+                  const errorMessage = document.createElement('p');
+                  errorMessage.textContent = 'There was an error processing your screenshot. Please try again.';
+                  errorMessage.classList.add('error-message');
+                  chatContent.appendChild(errorMessage);
+                  chatContent.scrollTop = chatContent.scrollHeight;
+              });
+        }, 'image/png');
+    }).catch(error => {
+        console.error('Error capturing selected area:', error);
+        const chatContent = document.getElementById('chatContent');
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = 'There was an error capturing your screenshot. Please try again.';
+        errorMessage.classList.add('error-message');
+        chatContent.appendChild(errorMessage);
+        chatContent.scrollTop = chatContent.scrollHeight;
+
+    });
+}
