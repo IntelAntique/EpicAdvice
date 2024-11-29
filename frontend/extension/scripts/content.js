@@ -51,7 +51,7 @@ chatWidget.innerHTML = `
         <!-- Fixed Input Area at Bottom -->
         <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; border-top: 1px solid #ddd; position: sticky; bottom: 0; background-color: #ffffff;">
             <input type="text" placeholder="Send a message" id="chatInputImessages" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
-            <button id="voiceButtonImessages" class="voice-button" style="background: none; border: none; cursor: pointer;">
+            <button id="voiceButton" class="voice-button" style="background: none; border: none; cursor: pointer;">
                 <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice" style="width: 24px; height: 24px; margin-left: 10px;">
             </button>
             <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
@@ -611,8 +611,7 @@ function startScreenCaptureWithSelection() {
         const endX = e.clientX;
         const endY = e.clientY;
         document.body.removeChild(overlay);
-
-        // Calculate the selected area
+        
         const rect = {
             left: Math.min(startX, endX),
             top: Math.min(startY, endY),
@@ -637,21 +636,54 @@ function captureSelectedArea(rect) {
             const formData = new FormData();
             formData.append('screenshot', blob, 'screenshot.png');
 
+            const chatImessages = document.getElementById('chat-imessages');
+            chatImessages.style.display = 'block';
+
+            const chatContent = document.getElementById('chatContent');
+            const imgElement = document.createElement('img');
+            imgElement.src = URL.createObjectURL(blob);
+            imgElement.style.maxWidth = '100%';
+            imgElement.style.border = '1px solid #ddd';
+            imgElement.style.borderRadius = '8px';
+            imgElement.style.marginBottom = '10px';
+            chatContent.appendChild(imgElement);
+            chatContent.scrollTop = chatContent.scrollHeight;
+
             fetch('http://127.0.0.1:5000/upload_screenshot', {
                 method: 'POST',
                 body: formData
-            }).then(response => {
-                if (response.ok) {
-                    console.log('Screenshot uploaded successfully');
-                } else {
-                    console.error('Failed to upload screenshot');
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.response) {
+                      const aiMessage = document.createElement('p');
+                      aiMessage.textContent = data.response;
+                      aiMessage.classList.add('ai-message');
+                      chatContent.appendChild(aiMessage);
+                      chatContent.scrollTop = chatContent.scrollHeight;
+                  } else {
+                      const errorMessage = document.createElement('p');
+                      errorMessage.textContent = 'AI did not return a response.';
+                      errorMessage.classList.add('error-message');
+                      chatContent.appendChild(errorMessage);
+                      chatContent.scrollTop = chatContent.scrollHeight;
+                  }
+              }).catch(error => {
+                  console.error('Error uploading screenshot:', error);
+                  const errorMessage = document.createElement('p');
+                  errorMessage.textContent = 'There was an error processing your screenshot. Please try again.';
+                  errorMessage.classList.add('error-message');
+                  chatContent.appendChild(errorMessage);
+                  chatContent.scrollTop = chatContent.scrollHeight;
+              });
         }, 'image/png');
     }).catch(error => {
         console.error('Error capturing selected area:', error);
+        const chatContent = document.getElementById('chatContent');
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = 'There was an error capturing your screenshot. Please try again.';
+        errorMessage.classList.add('error-message');
+        chatContent.appendChild(errorMessage);
+        chatContent.scrollTop = chatContent.scrollHeight;
+
     });
 }
-

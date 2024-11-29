@@ -15,7 +15,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.uwhealth.org/*"], //The plugin is only shown on the site uwhealth
+      "matches": ["<all_urls>"],
       "js": ["dom-to-image.js","scripts/content.js","html2canvas.min.js"],
       "css": ["scripts/page1.css"],
       "type": "module",
