@@ -197,6 +197,8 @@ function sendMessage() {
             chatMessages.appendChild(errorMessage);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         });
+    }
+}
 
 document.getElementById('chatInputImessages').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
@@ -885,3 +887,4 @@ function captureSelectedArea(rect) {
 
     });
 }
+
