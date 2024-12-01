@@ -86,9 +86,24 @@ chatWidget.innerHTML = `
             <button id="close-imessages" class="close-chat-button" style="margin-left: auto; background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
         </div>
         <!-- Chat Content Area with Scroll -->
-        <div id="chatContent" style="flex: 1; padding: 20px; background-color: #f9f9f9; overflow-y: auto; border-radius: 8px; height: calc(100% - 60px); max-height: calc(100% - 100px);">
+        <div id="chatContent" style="flex: 1; padding: 20px; background-color: #f9f9f9; overflow-y: auto; border-radius: 8px; height: calc(100% - 60px); max-height: calc(100% - 200px);">
             <!-- User messages and AI responses will appear here -->
         </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 15px 20px; box-sizing: border-box;">
+            <!-- Left aligned button -->
+            <button id="screenButton" style="background: none; border: none; cursor: pointer;">
+                <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen Icon" style="width: 24px; height: 24px;">
+                <span style="font-size: 14px; color: #007bff; font-weight: bold;">Select Area to Explain</span>
+            </button>
+
+            <!-- Right aligned button -->
+            <button id="toggle-record" style="background: none; border: none; cursor: pointer; display: flex; align-items: center;">
+                <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice Icon" style="width: 24px; height: 24px; margin-right: 8px;">
+                <span style="font-size: 14px; color: #007bff; font-weight: bold;">Ask Voice Questions</span>
+            </button>
+        </div>
+
         <!-- Fixed Input Area at Bottom -->
         <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; border-top: 1px solid #ddd; position: sticky; bottom: 0; background-color: #ffffff;">
             <input 
@@ -97,16 +112,6 @@ chatWidget.innerHTML = `
                 id="chatInputImessages" 
                 style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; margin-right: 0px;" 
             />
-            <button 
-                id="toggle-record" 
-                class="voice-button" 
-                style="background: none; border: none; cursor: pointer; flex: 0;">
-                <img 
-                    src="${chrome.runtime.getURL("images/voice.png")}" 
-                    alt="Voice" 
-                    style="width: 24px; height: 24px; margin-left: 0px;" 
-                />
-            </button>
         </div>
 
     </div>
@@ -660,6 +665,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 document.getElementById('screenButton').addEventListener('click', function() {
     startScreenCaptureWithSelection();
 });
+
+document.getElementById('chat-imessages').addEventListener('click', function(event) {
+    const button = event.target.closest('#screenButton');
+    if (button) {
+        startScreenCaptureWithSelection();
+    }
+});
+
+document.getElementById('chat-imessages').addEventListener('click', function(event) {
+    const button = event.target.closest('#toggle-record');
+    button.innerHTML = `<img src="${chrome.runtime.getURL("images/voice2.png")}" alt="Voice Icon" style="width: 24px; height: 24px;">
+                                <span style="font-size: 14px; color: #007bff; font-weight: bold;">Click Again to Stop Recording</span>`;
+    if (button) {
+        if (isRecording) {
+            stopRecording();
+            button.innerHTML = `<img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice Icon" style="width: 24px; height: 24px;">
+                                <span style="font-size: 14px; color: #007bff; font-weight: bold;">Ask Voice Questions</span>`;
+            setTimeout(() => {
+                sendAudioMessage();
+            }, 1000);
+        } else {
+            startRecording();
+        }
+    }
+});
+
 
 function startScreenCaptureWithSelection() {
     const overlay = document.createElement('div');
