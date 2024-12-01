@@ -12,8 +12,8 @@ from flask_cors import CORS
 import pytesseract # what is this for??
 from Audio import record
 import pathlib
-# import sounddevice as sd
-# import numpy as np
+import sounddevice as sd
+import numpy as np
 import threading
 import wave
 import time

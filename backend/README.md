@@ -30,10 +30,7 @@ Users Table
  - Address              
 
 ### Setting up new database
- Run: 
- `sqlite3 epicAdvice.db`
- `SELECT * FROM Users WHERE id = 1;`
- `SELECT FirstName, LastName, Email, Age, Gender FROM Users;`             
+   1, navigate to `DataBase` directory and run `insert.py`            
                                                           
                        
        
@@ -56,7 +53,8 @@ Users Table
     pip install flask pillow pytesseract
     brew install tesseract
     pip install pillow
-    pip install pyaudio keyboard
+    pip install pyaudio keyboard numpy
+    
 
 
 ## Environment Setup
