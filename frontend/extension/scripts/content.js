@@ -298,7 +298,7 @@ document.getElementById('notesButton').addEventListener('click', function() {
         <h3 style="text-align: center; font-weight: bold;">Doctor's Notes</h3>
         <div style="padding: 20px; color: black;">
             <h5>Patient Information</h5>
-            <p><strong>Name:</strong> XXXXX</p>
+            <p><strong>Name:</strong> Bucky Badger</p>
             <p><strong>Age:</strong> 25</p>
             <p><strong>Gender:</strong> male</p>
             
@@ -353,34 +353,77 @@ document.getElementById('notesButton').addEventListener('click', function() {
 
 
 
-
+// health summary feature
 document.getElementById('summaryButton').addEventListener('click', function() {
     const summaryDiv = document.createElement('div');
-    summaryDiv.innerHTML = `
-        <h3 style="text-align: center; font-weight: bold; padding: 10px;">Summary</h3>
-        <div style="padding: 20px;">
-            <h5>Patient Information</h5>
-            <p><strong>Name:</strong> XXXXX</p>
-            <p><strong>Age:</strong> 25</p>
-            <p><strong>Gender:</strong> male</p>
+    fetch('http://127.0.0.1:5000/health_summary_pdf', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error fetching summary: " + data.error);
+            return;
+        }
+
+        const responseText = data.response;
+        console.log(responseText)
+   
+        const patientInfo = responseText['patient_info'] || "No patient information found.";
+        const diagnosis = responseText['diagnosis'] || "No diagnosis available.";
+        const physicalExamination = responseText['physical_examination'] || "No examination results available.";
+        const overallHealth = responseText['overall_health'] || "No overall health summary available.";
+        const healthPlan = responseText['health_plan'] || "No health plan available.";
+        
+            summaryDiv.innerHTML = `
+                <h3 style="text-align: center; font-weight: bold; padding: 10px;">Summary</h3>
+                <div style="padding: 20px;">
+                    <h5>Patient Information</h5>
+                    <ul>
+                        ${patientInfo || 'No patient information found.'}
+                    </ul>
+                    
+                    <h5>Diagnosis</h5>
+                    <p>${diagnosis || 'No diagnosis available.'}</p>
+                    
+                    <h5>Physical Examination Results</h5>
+                    <p>${physicalExamination || 'No examination results available.'}</p>
+                    
+                    <h5>Overall Health</h5>
+                    <p>${overallHealth || 'No overall health summary available.'}</p>
+                    
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button id="closeSummary" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                    </div>
+                </div>
+            `;
+
+        });
+    // summaryDiv.innerHTML = `
+    //     <h3 style="text-align: center; font-weight: bold; padding: 10px;">Summary</h3>
+    //     <div style="padding: 20px;">
+    //         <h5>Patient Information</h5>
+    //         <p><strong>Name:</strong> XXXXX</p>
+    //         <p><strong>Age:</strong> 25</p>
+    //         <p><strong>Gender:</strong> male</p>
             
-            <h5>Diagnosis</h5>
-            <p><strong>Acute Gastroenteritis</strong></p>
-            <ul>
-                <li>This is typically a temporary condition and should improve with proper treatment and care.</li>
-            </ul>
+    //         <h5>Diagnosis</h5>
+    //         <p><strong>Acute Gastroenteritis</strong></p>
+    //         <ul>
+    //             <li>This is typically a temporary condition and should improve with proper treatment and care.</li>
+    //         </ul>
             
-            <h5>Physical Examination Results</h5>
-            <p>There is some mild tenderness and increased bowel sounds, which are common with gastroenteritis. However, there is no rebound tenderness or distension, which suggests there are no serious complications like bowel obstruction.</p>
+    //         <h5>Physical Examination Results</h5>
+    //         <p>There is some mild tenderness and increased bowel sounds, which are common with gastroenteritis. However, there is no rebound tenderness or distension, which suggests there are no serious complications like bowel obstruction.</p>
             
-            <h5>Overall Health</h5>
-            <p>Based on the examination, your vital signs such as temperature, blood pressure, heart rate, and respiratory rate are within the normal range. This indicates that your body is coping well with the illness. There are no signs of severe dehydration, and your oral mucosa and skin turgor are normal, which is a positive sign.</p>
+    //         <h5>Overall Health</h5>
+    //         <p>Based on the examination, your vital signs such as temperature, blood pressure, heart rate, and respiratory rate are within the normal range. This indicates that your body is coping well with the illness. There are no signs of severe dehydration, and your oral mucosa and skin turgor are normal, which is a positive sign.</p>
             
-            <div style="text-align: center; margin-top: 10px;">
-                <button id="closeSummary" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
-            </div>
-        </div>
-    `;
+    //         <div style="text-align: center; margin-top: 10px;">
+    //             <button id="closeSummary" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+    //         </div>
+    //     </div>
+    // `;
 
 //summary目前的style
     summaryDiv.style.position = 'fixed';

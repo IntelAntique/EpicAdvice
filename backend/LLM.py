@@ -12,8 +12,8 @@ from flask_cors import CORS
 import pytesseract # what is this for??
 from Audio import record
 import pathlib
-import sounddevice as sd
-import numpy as np
+# import sounddevice as sd
+# import numpy as np
 import threading
 import wave
 import time
@@ -296,34 +296,52 @@ def get_user_data():
 def process_pdf():
     try:
         backend_folder = os.path.dirname(os.path.abspath(__file__))
-        pdf_filename = 'Doctor_Progress_Notes.pdf'  
+        pdf_filename = 'DataBase/Doctor_Progress_Notes.pdf'  
         file_path = os.path.join(backend_folder, pdf_filename)
 
         if not os.path.exists(file_path):
             return jsonify({"error": "File not found"}), 404
 
         pdf_file = genai.upload_file(path=file_path, display_name="Uploaded PDF")
-        print(f"PDF uploaded to LLM with file ID: {pdf_file}")
 
         sys_ins = f"""
         You are provided with a PDF document that may contain healthcare lab reports or medical charts. Your job is to:
         1. Identify if the PDF contains healthcare information.
         2. If it does, provide a detailed summary of the document, including:
-            - Patient details (if visible)
-            - Test results and observations
-            - Any important metrics, such as blood sugar levels, cholesterol levels, etc.
-            - Summarize in a way that a non-medical professional can understand.
+            1. Extract patient details (if visible).
+            2. Summarize the diagnosis.
+            3. Provide results of any physical examinations or tests mentioned.
+            4. Provide an overall health summary.
+            5. Extract any health plan details.
+
+            Return the data as a **strictly valid JSON object**  with the following format:
+                {{
+                "patient_info": "Name: John Doe, Age: 35, Gender: Male",
+                "diagnosis": "Acute Gastroenteritis",
+                "physical_examination": "Some mild tenderness and increased bowel sounds.\n No rebound tenderness or distension.",
+                "overall_health": "Vital signs are normal. The body is coping well with no signs of severe dehydration.",
+                "health_plan": "Take Amoxicillin 50mg twice daily for 10 days. Rest and avoid caffeine."
+                }}
+            Do not include ``` or any additional text, explanations, or comments. Only return the JSON object as specified.
         3. If there is no identifiable medical information, inform the user that no medical chart was found.
 
         Use simple and clear language, and ensure all medical jargon is explained in layman's terms.
         """
 
         model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
-        response = model.generate_content([pdf_file]).text
+    
+        response = model.generate_content(
+            ["Extract info from the doctor note pdf.", pdf_file]
+        ).text
 
-        print(response)
+        #text processing
+        start = response.find("{")
+        end = response.rfind("}") + 1
+        valid_json = response[start:end]
+        json_response = json.loads(valid_json)
+        print(json_response)
 
-        return jsonify({"response": response}), 200
+        return jsonify({"response": json_response}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
