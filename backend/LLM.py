@@ -29,7 +29,7 @@ app = Flask(__name__)
 #CORS(app)
 CORS(app)
 
-DATABASE_PATH = 'DataBase/epicAdvice.db'
+DATABASE_PATH = os.path.join(os.path.dirname(__file__), 'DataBase/epicAdvice.db')
 @app.route('/')
 def home():
     return "Welcome to the AI Response Server!"
@@ -44,7 +44,7 @@ chunk = 1024
 format = pyaudio.paInt16
 channels = 1
 rate = 44100
-output_filename = "recorded_audio.wav"
+output_filename = "../frontend/extension/audio/recorded_audio.wav"
 
 def record_audio():
     global is_recording, frames
@@ -105,7 +105,7 @@ def audioResponse():
         question = """
             The audio file here is my question. Please provide a response.
         """
-        media_path = pathlib.Path(__file__).parent / "recorded_audio.wav"
+        media_path = pathlib.Path(__file__).parent.parent / "frontend/extension/audio/recorded_audio.wav"
         myfile = genai.upload_file(media_path)
         
         response = model.generate_content([myfile, question])
