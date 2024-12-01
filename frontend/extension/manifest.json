@@ -29,7 +29,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/AIPhoto.png", "scripts/page1.css", "images/*", "popup/popup.js" , "background.js" , "scripts/content.js"],
+      "resources": ["images/AIPhoto.png", "scripts/page1.css", "images/*", "popup/popup.js" , "background.js" , "scripts/content.js" , "audio/recorded_audio.wav"],
 
       "matches": ["<all_urls>"]
     }

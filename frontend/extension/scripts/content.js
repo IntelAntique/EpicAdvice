@@ -12,31 +12,71 @@ chatWidget.innerHTML = `
         </button>
 
         <div id="chatWindow" class="chat-window hidden" style="display: none; flex-direction: column;">
+            <!-- Chat Header -->
             <div class="chat-header" style="display: flex; align-items: center; padding: 10px; background-color: #ffffff;">
                 <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
                 <p style="margin: 0; font-size: 14px; flex: 1; text-align: left;">
                     Hi! I'm Vita, your AI health guide. <br> 
                     Need help understanding something? Just ask me! <br>
-                    How can I assist you today?</p>
+                    How can I assist you today?
+                </p>
                 <button id="close-chat" class="close-chat-button" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
             </div>
-            <div class="chat-options" style="width: 100%; padding: 10px; display: flex; flex-direction: column; gap: 10px;">
-                <button id="notesButton" class="chat-option" style="background-color: #fddddd; padding: 4px; font-size: 12px; border: 1px solid #f7aaaa; border-radius: 5px; cursor: pointer; width: 40%;">Doctor's notes</button>
-                <button id="summaryButton" class="chat-option" style="background-color: #e0f7e9; padding: 4px; font-size: 12px; border: 1px solid #b2dfdb; border-radius: 5px; cursor: pointer; width: 40%;">Summary</button>
-                <button id="planButton" class="chat-option" style="background-color: #e6e6fa; padding: 4px; font-size: 12px; border: 1px solid #b2b2d8; border-radius: 5px; cursor: pointer; width: 40%;">Current Plan</button>
+
+            <!-- Summary Card -->
+            <div class="health-summary-card" style="width: calc(100% - 40px); padding: 15px; margin: 10px 20px; border: 1px solid #ccc; border-radius: 12px; background-color:  #F7FAFF; text-align: center; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+                <button id="summaryButton" style="all: unset; cursor: pointer; font-size: 16px; font-weight: bold; color: #007bff; margin-bottom: 10px;">
+                    View Health Summary  >
+                </button>
+                <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
+                    <svg viewBox="0 0 36 36" style="transform: rotate(-90deg); width: 100%; height: 100%;">
+                        <path
+                            d="M18 2.5
+                            a 15.5 15.5 0 1 1 0 31
+                            a 15.5 15.5 0 1 1 0 -31"
+                            fill="none"
+                            stroke="#e0e0e0"
+                            stroke-width="2.5"
+                        ></path>
+                        <path
+                            d="M18 2.5
+                            a 15.5 15.5 0 1 1 0 31
+                            a 15.5 15.5 0 1 1 0 -31"
+                            fill="none"
+                            stroke="#007bff"
+                            stroke-width="2.5"
+                            stroke-dasharray="100, 100"
+                        ></path>
+                    </svg>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div style="font-size: 20px; font-weight: bold; color: #007bff;">100%</div>
+                        <div style="font-size: 14px;">Doctor's Focus</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="chat-input-area" style="width: 100%; padding: 10px; box-sizing: border-box; display: flex; align-items: center; position: sticky; bottom: 0; background-color: #ffffff;">
-                <input type="text" placeholder="Send messages to AI doctor" id="chatInput" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" />
-                <button id="screenButton" class="screen-button" style="background: none; border: none; cursor: pointer; margin-left: 10px;">
-                    <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen Icon" style="width: 24px; height: 24px;">
-                </button>
-                <button id="toggle-record" class="voice-button" style="background: none; border: none; cursor: pointer; margin-left: 10px;">
-                    <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice Icon" style="width: 24px; height: 24px;">
-                </button>
+            <div style="margin-top: 15px;margin-left: 20px">
+                    <button id="screenButton" style="background: none; border: none; cursor: pointer;">
+                        <img src="${chrome.runtime.getURL("images/screenshot.png")}" alt="Screen Icon" style="width: 24px; height: 24px;">
+                        <span style="font-size: 14px; color: #007bff; font-weight: bold;">Select Area to Explain</span>
+                    </button>
+            </div>
+
+            <div style="margin-top: 15px;margin-left: 20px">
+                    <button id="inputButton" style="background: none; border: none; cursor: pointer;">
+                        <img src="${chrome.runtime.getURL("images/input.png")}" alt="Input Icon" style="width: 24px; height: 24px;">
+                        <span style="font-size: 14px; color: #007bff; font-weight: bold;">Ask Questions</span>
+                    </button>
+            </div>
+
+            <div style="margin-top: 15px;margin-left: 20px">
+                    <button id="toggle-record" style="background: none; border: none; cursor: pointer;">
+                        <img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice Icon" style="width: 24px; height: 24px;">
+                        <span style="font-size: 14px; color: #007bff; font-weight: bold;">Ask Voice Questions</span>
+                    </button>
             </div>
         </div>
-    </div>
+
 
     <!-- Chat-imessages Window -->
     <div id="chat-imessages" style="display: none; position: fixed; top: 0; right: 0; width: 50%; height: 100%; background-color: #ffffff; z-index: 1001; box-shadow: -4px 0px 8px rgba(0,0,0,0.1);">
@@ -55,7 +95,7 @@ chatWidget.innerHTML = `
                 type="text" 
                 placeholder="Send a message" 
                 id="chatInputImessages" 
-                style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; margin-right: 10px;" 
+                style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; margin-right: 0px;" 
             />
             <button 
                 id="toggle-record" 
@@ -64,18 +104,7 @@ chatWidget.innerHTML = `
                 <img 
                     src="${chrome.runtime.getURL("images/voice.png")}" 
                     alt="Voice" 
-                    style="width: 24px; height: 24px; margin-left: 10px;" 
-                />
-            </button>
-            <button 
-                id="screenButton" 
-                class="screen-button" 
-                style="background: none; border: none; cursor: pointer; margin-left: 5px; flex: 0;">
-                <img 
-                    src="${chrome.runtime.getURL("images/screenshot.png")}" 
-                    alt="Screen" 
-                    id="chat-icon" 
-                    style="width: 24px; height: 24px;" 
+                    style="width: 24px; height: 24px; margin-left: 0px;" 
                 />
             </button>
         </div>
@@ -97,7 +126,7 @@ style.innerHTML = `
     bottom: 20px;
     right: 20px;
     width: 420px;
-    height: 350px;
+    height: 500px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -162,13 +191,14 @@ document.getElementById('close-chat').addEventListener('click', function() {
     chatIcon.style.display = 'block';
 });
 
-document.getElementById('chatInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        const message = event.target.value.trim();
-        if (message) {
-            showImessagesWindow(message);
-            event.target.value = '';
-        }
+
+let hasShownWelcomeMessage = false;
+document.getElementById('inputButton').addEventListener('click', function(event) {
+    document.getElementById("chatWindow").style.display = "none";
+    document.getElementById("chat-imessages").style.display = "block";
+    if (!hasShownWelcomeMessage) {
+        appendMessageToChatContent("Welcome to your AI Doctor Assistant! I'm here to help with any questions or concerns you have about your health.", false);
+        hasShownWelcomeMessage = true;
     }
 });
 
@@ -291,67 +321,6 @@ function openModal(content) {
     modal.style.display = 'block';
 }
 
-// Attach event listeners to buttons to show modal with different content
-document.getElementById('notesButton').addEventListener('click', function() {
-    const noteDiv = document.createElement('div');
-    noteDiv.innerHTML = `
-        <h3 style="text-align: center; font-weight: bold;">Doctor's Notes</h3>
-        <div style="padding: 20px; color: black;">
-            <h5>Patient Information</h5>
-            <p><strong>Name:</strong> Bucky Badger</p>
-            <p><strong>Age:</strong> 25</p>
-            <p><strong>Gender:</strong> male</p>
-            
-            <h5>History</h5>
-            <p>The patient has no known food allergies and no recent changes in diet.</p>
-            <p>There is [no/recent] history of travel and no known contact with sick individuals.</p>
-            <p>No chronic illnesses, and the patient denies taking any new medications.</p>
-            
-            <h5>Physical Examination</h5>
-            <p><strong>Vital Signs:</strong></p>
-            <ul>
-                <li>Temperature: 1000</li>
-                <li>Blood Pressure: 1000</li>
-                <li>Heart Rate: 100/min</li>
-                <li>Respiratory Rate: 6/min</li>
-            </ul>
-            <p><strong>Abdominal Examination:</strong></p>
-            <p>Increased bowel sounds and mild tenderness upon palpation, no rebound tenderness.</p>
-            <p>Other Findings: No signs of dehydration, oral mucosa is moist, skin turgor is normal.</p>
-            
-            <h5>Diagnosis</h5>
-            <p>Acute Gastroenteritis</p>
-            
-            <h5>Recommendations</h5>
-            <ul>
-                <li><strong>Hydration:</strong> Encourage the patient to drink plenty of fluids.</li>
-                <li><strong>Diet:</strong> Recommend bland foods such as rice, toast, and bananas.</li>
-                <li><strong>Rest:</strong> Advise the patient to rest and avoid strenuous activities.</li>
-            </ul>
-            <div style="text-align: center; margin-top: 10px;">
-                <button id="closeNote" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
-            </div>
-        </div>
-    `;
-    noteDiv.style.position = 'fixed';
-    noteDiv.style.bottom = '20px';
-    noteDiv.style.right = 'calc(40px + 400px)';
-    noteDiv.style.zIndex = '1000';
-    noteDiv.style.background = '#fff';
-    noteDiv.style.padding = '20px';
-    noteDiv.style.borderRadius = '8px';
-    noteDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-    noteDiv.style.width = '600px';
-    noteDiv.style.height = '600px';
-    noteDiv.style.overflowY = 'auto';
-
-    document.body.appendChild(noteDiv);
-    document.getElementById('closeNote').addEventListener('click', function() {
-        noteDiv.remove();
-    });
-});
-
-
 
 // health summary feature
 document.getElementById('summaryButton').addEventListener('click', function() {
@@ -367,6 +336,10 @@ document.getElementById('summaryButton').addEventListener('click', function() {
         }
 
         summaryDiv.innerHTML = data.response
+
+        document.getElementById('closeSummary').addEventListener('click', function() {
+            summaryDiv.remove();
+        });
 
         });
     
@@ -385,45 +358,6 @@ document.getElementById('summaryButton').addEventListener('click', function() {
 
     document.body.appendChild(summaryDiv);
 
-    document.getElementById('closeSummary').addEventListener('click', function() {
-        summaryDiv.remove();
-    });
-});
-
-document.getElementById('planButton').addEventListener('click', function() {
-    const planDiv = document.createElement('div');
-    planDiv.innerHTML = `
-        <p>Today's Health Plan <span style="float: right; font-size: 10px;">Oct 17, 2024</span></p>
-        <p>🩺 Medication</p>
-        <p><strong>Amoxicillin</strong><br>Take 1 tablet (50mg) by mouth twice a day (once in the morning and once in the evening) for 10 days.</p>
-        <p><strong>Nicotine 14MG/24HR Patch</strong><br>Place 1 patch on the skin (one) time each day at the same time.</p>
-        <p>🌱 Vita’s Care Plan for You</p>
-        <ul>
-            <li>Avoid cold drinks or caffeine, which can irritate your throat.</li>
-            <li>Eat soft, non-spicy foods that are easy on your throat, like soup or yogurt.</li>
-            <li>If your symptoms do not improve in 3–5 days, schedule a follow-up appointment.</li>
-        </ul>
-        <div style="text-align: center; margin-top: 10px;">
-            <button id="closePlan" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
-        </div>
-    `;
-    planDiv.style.position = 'fixed';
-    planDiv.style.bottom = '20px';
-    planDiv.style.right = 'calc(40px + 400px)';
-    planDiv.style.zIndex = '1000';
-    planDiv.style.background = '#fff';
-    planDiv.style.padding = '20px';
-    planDiv.style.borderRadius = '8px';
-    planDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-    planDiv.style.width = '400px';
-    planDiv.style.height = '600px';
-    planDiv.style.overflowY = 'auto'; 
-
-
-    document.body.appendChild(planDiv);
-    document.getElementById('closePlan').addEventListener('click', function() {
-        planDiv.remove();
-    });
 });
 
 
@@ -578,7 +512,6 @@ document.addEventListener('mouseup', function(event) {
     }
 });
 
-// Function to make the innerPage draggable
 function dragElement(element) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     element.onmousedown = dragMouseDown;
@@ -608,124 +541,70 @@ function dragElement(element) {
 
 }
 
-document.addEventListener('mouseup', function(event) {
-    const selectedText = window.getSelection().toString().trim();
-    if (selectedText && event.target.tagName !== 'BUTTON') {
-        fetch('http://127.0.0.1:5000/get_response', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_input: selectedText, highlight: true }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    console.error('Error response:', text);
-                    throw new Error('Network response was not ok');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            const aiResponse = data.response;
-            showModal(event.pageX, event.pageY, aiResponse);
-        })
-        .catch(error => {
-            console.error('Fetch error:', error);
-        });
-    }
-});
-
-function showModal(x, y, message) {
-    const modal = document.createElement('div');
-    modal.style.position = 'absolute';
-    modal.style.left = `${x}px`;
-    modal.style.top = `${y}px`;
-    modal.style.width = '25%'; // Set the width to a quarter of the screen
-    modal.style.padding = '10px';
-    modal.style.backgroundColor = '#1e3a5f'; // Dark cool blue background
-    modal.style.color = 'white'; // Bright white text
-    modal.style.border = '1px solid #0d253f'; // Slightly darker border
-    modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
-    modal.style.zIndex = 1000;
-    modal.style.transition = 'opacity 0.5s';
-    modal.style.opacity = 0;
-
-    const messageParagraph = document.createElement('p');
-    messageParagraph.textContent = message;
-    modal.appendChild(messageParagraph);
-
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Close';
-    closeButton.style.backgroundColor = '#0d253f'; // Darker blue for the button
-    closeButton.style.color = 'white'; // White text for the button
-    closeButton.style.border = 'none';
-    closeButton.style.padding = '5px 10px';
-    closeButton.style.cursor = 'pointer';
-    closeButton.onclick = function() {
-        modal.style.opacity = 0;
-        setTimeout(() => {
-            document.body.removeChild(modal);
-        }, 500);
-    };
-    modal.appendChild(closeButton);
-
-    document.body.appendChild(modal);
-    setTimeout(() => {
-        modal.style.opacity = 1;
-    }, 0);
-}
-
 let isRecording = false;
 
 document.getElementById('toggle-record').addEventListener('click', function() {
     if (isRecording) {
         stopRecording();
-        sendAudioMessage();
+        setTimeout(() => {
+            sendAudioMessage();
+        }, 1000);
     } else {
         startRecording();
     }
 });
 
 function sendAudioMessage() {
-    const chatMessages = document.getElementById('chatMessages');
+    document.getElementById("chatWindow").style.display = "none";
+    document.getElementById("chat-imessages").style.display = "block";
+    const chatContent = document.getElementById('chatContent');
+    const audioMessage = document.createElement('div');
+    audioMessage.classList.add('user-message');
+    audioMessage.style.textAlign = 'right';
+    audioMessage.innerHTML = `
+        <audio controls style="max-width: 200px;">
+            <source src="${chrome.runtime.getURL("audio/recorded_audio.wav")}" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio>
+    `;
+    chatContent.appendChild(audioMessage);
+    chatContent.scrollTop = chatContent.scrollHeight;
 
-    const userMessage = document.createElement('p');
-    userMessage.textContent = 'Sending audio message...';
-    userMessage.classList.add('user-message');
-    chatMessages.appendChild(userMessage);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
-    fetch('http://127.0.0.1:5000/audio_response', {
-        method: 'POST'
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(text => {
-                console.error('Error response:', text);
+    // Delay execution by 10 seconds
+    setTimeout(() => {
+        fetch('http://127.0.0.1:5000/audio_response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
                 throw new Error('Network response was not ok');
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        const aiResponse = data.response;
-        const aiMessage = document.createElement('p');
-        aiMessage.textContent = aiResponse;
-        aiMessage.classList.add('ai-message');
-        chatMessages.appendChild(aiMessage);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-    });
+            }
+            return response.json();
+        })
+        .then(data => {
+            const aiResponse = data.response;
+            appendMessageToChatContent(aiResponse, false);
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+
+            // Replace the waiting message with an error message
+            waitingMessage.textContent = 'An error occurred: ' + error.message;
+            waitingMessage.classList.add('error-message');
+        });
+    }, 10000); // Delay for 10 seconds (10,000 milliseconds)
 }
+
+    
 
 function startRecording() {
     isRecording = true;
-    document.getElementById('toggle-record').textContent = '🎤';
-    document.getElementById('toggle-record').style.opacity = "0.5";
+    const button = document.getElementById('toggle-record');
+    button.innerHTML = `<img src="${chrome.runtime.getURL("images/voice2.png")}" alt="Voice Icon" style="width: 24px; height: 24px;">
+    <span style="font-size: 14px; color: #007bff; font-weight: bold;">Click Again to Stop Recording</span>`;
 
     fetch('http://127.0.0.1:5000/start_recording', {
         method: 'POST',
@@ -741,8 +620,9 @@ function startRecording() {
 
 function stopRecording() {
     isRecording = false;
-    document.getElementById('toggle-record').textContent = '🎤';
-    document.getElementById('toggle-record').style.opacity = "1"
+    const button = document.getElementById('toggle-record');
+    button.innerHTML = `<img src="${chrome.runtime.getURL("images/voice.png")}" alt="Voice Icon" style="width: 24px; height: 24px;">
+    <span style="font-size: 14px; color: #007bff; font-weight: bold;">Ask Voice Questions</span>`;
 
     fetch('http://127.0.0.1:5000/stop_recording', {
         method: 'POST',
@@ -755,6 +635,7 @@ function stopRecording() {
         console.error('Fetch error:', error);
     });
 }
+
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
