@@ -314,15 +314,34 @@ def process_pdf():
             4. Provide an overall health summary.
             5. Extract any health plan details.
 
-            Return the data as a **strictly valid JSON object**  with the following format:
-                {{
-                "patient_info": "Name: John Doe, Age: 35, Gender: Male",
-                "diagnosis": "Acute Gastroenteritis",
-                "physical_examination": "Some mild tenderness and increased bowel sounds.\n No rebound tenderness or distension.",
-                "overall_health": "Vital signs are normal. The body is coping well with no signs of severe dehydration.",
-                "health_plan": "Take Amoxicillin 50mg twice daily for 10 days. Rest and avoid caffeine."
-                }}
-            Do not include ``` or any additional text, explanations, or comments. Only return the JSON object as specified.
+            Return the data as a html string  with the following format:
+             
+                <h3 style="text-align: center; font-weight: bold; padding: 10px;">Summary</h3>
+                <div style="padding: 20px;">
+                    <h5>Patient Information</h5>
+                    <p><strong>Name:</strong> XXXXX</p>
+                    <p><strong>Age:</strong> 25</p>
+                    <p><strong>Gender:</strong> male</p>
+                    
+                    <h5>Diagnosis</h5>
+                    <p><strong>Acute Gastroenteritis</strong></p>
+                    <ul>
+                        <li>This is typically a temporary condition and should improve with proper treatment and care.</li>
+                    </ul>
+                    
+                    <h5>Physical Examination Results</h5>
+                    <p>There is some mild tenderness and increased bowel sounds, which are common with gastroenteritis. However, there is no rebound tenderness or distension, which suggests there are no serious complications like bowel obstruction.</p>
+                    
+                    <h5>Overall Health</h5>
+                    <p>Based on the examination, your vital signs such as temperature, blood pressure, heart rate, and respiratory rate are within the normal range. This indicates that your body is coping well with the illness. There are no signs of severe dehydration, and your oral mucosa and skin turgor are normal, which is a positive sign.</p>
+                    
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button id="closeSummary" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                    </div>
+                </div>
+    
+
+            Do not include ``` or any additional text, explanations, or comments. Only return the html object as specified.
         3. If there is no identifiable medical information, inform the user that no medical chart was found.
 
         Use simple and clear language, and ensure all medical jargon is explained in layman's terms.
@@ -335,13 +354,16 @@ def process_pdf():
         ).text
 
         #text processing
-        start = response.find("{")
-        end = response.rfind("}") + 1
-        valid_json = response[start:end]
-        json_response = json.loads(valid_json)
-        print(json_response)
+        start = response.find("<")
+        end = response.rfind(">") + 1
 
-        return jsonify({"response": json_response}), 200
+        if start == -1 or end == 0:
+            # If no valid HTML is found, return an error
+            return jsonify({"error": "Invalid HTML content", "raw_response": response}), 400
+
+        cleaned_html = response[start:end]
+
+        return jsonify({"response": cleaned_html}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
