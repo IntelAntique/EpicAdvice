@@ -230,7 +230,6 @@ def upload_screenshot():
         Use simple and clear language, and ensure all medical jargon is explained in layman's terms.
         """
         # "in a way that is:
-        # - Appropriate for a {age} year old {gender} child
         # - Extra careful to explain concepts related to {family_member_history} in a gentle way
         # - Mindful of {nutrition} dietary considerations
         # - Using simple language suitable for a {occupation}""
@@ -293,8 +292,81 @@ def get_user_data():
         print(f"Database error: {e}")
         return None
     
-def process_image_with_llm():
-    return None
+@app.route('/health_summary_pdf', methods=['POST'])
+def process_pdf():
+    try:
+        backend_folder = os.path.dirname(os.path.abspath(__file__))
+        pdf_filename = 'DataBase/Doctor_Progress_Notes.pdf'  
+        file_path = os.path.join(backend_folder, pdf_filename)
+
+        if not os.path.exists(file_path):
+            return jsonify({"error": "File not found"}), 404
+
+        pdf_file = genai.upload_file(path=file_path, display_name="Uploaded PDF")
+
+        sys_ins = f"""
+        You are provided with a PDF document that may contain healthcare lab reports or medical charts. Your job is to:
+        1. Identify if the PDF contains healthcare information.
+        2. If it does, provide a detailed summary of the document, including:
+            1. Extract patient details (if visible).
+            2. Summarize the diagnosis.
+            3. Provide results of any physical examinations or tests mentioned.
+            4. Provide an overall health summary.
+            5. Extract any health plan details.
+
+            Return the data as a html string  with the following format:
+             
+                <h3 style="text-align: center; font-weight: bold; padding: 10px;">Summary</h3>
+                <div style="padding: 20px;">
+                    <h5>Patient Information</h5>
+                    <p><strong>Name:</strong> XXXXX</p>
+                    <p><strong>Age:</strong> 25</p>
+                    <p><strong>Gender:</strong> male</p>
+                    
+                    <h5>Diagnosis</h5>
+                    <p><strong>Acute Gastroenteritis</strong></p>
+                    <ul>
+                        <li>This is typically a temporary condition and should improve with proper treatment and care.</li>
+                    </ul>
+                    
+                    <h5>Physical Examination Results</h5>
+                    <p>There is some mild tenderness and increased bowel sounds, which are common with gastroenteritis. However, there is no rebound tenderness or distension, which suggests there are no serious complications like bowel obstruction.</p>
+                    
+                    <h5>Overall Health</h5>
+                    <p>Based on the examination, your vital signs such as temperature, blood pressure, heart rate, and respiratory rate are within the normal range. This indicates that your body is coping well with the illness. There are no signs of severe dehydration, and your oral mucosa and skin turgor are normal, which is a positive sign.</p>
+                    
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button id="closeSummary" style="padding: 5px 10px; background: #4a90e2; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                    </div>
+                </div>
+    
+
+            Do not include ``` or any additional text, explanations, or comments. Only return the html object as specified.
+        3. If there is no identifiable medical information, inform the user that no medical chart was found.
+
+        Use simple and clear language, and ensure all medical jargon is explained in layman's terms.
+        """
+
+        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_ins)
+    
+        response = model.generate_content(
+            ["Extract info from the doctor note pdf.", pdf_file]
+        ).text
+
+        #text processing
+        start = response.find("<")
+        end = response.rfind(">") + 1
+
+        if start == -1 or end == 0:
+            # If no valid HTML is found, return an error
+            return jsonify({"error": "Invalid HTML content", "raw_response": response}), 400
+
+        cleaned_html = response[start:end]
+
+        return jsonify({"response": cleaned_html}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
