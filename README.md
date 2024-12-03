@@ -1,5 +1,20 @@
 # EpicAdvice
 
+## Development Prerequisites: 
+Installed: Python 3.12, IDE of your choice
+
+
+## Setup
+1. Open up Terminal from start menu (Windows) 
+2. Type “git clone https://github.com/IntelAntique/EpicAdvice.git”, then close terminal 
+3. Open Google Chrome, click on the **Puzzle Piece** Icon, and the bottom should show **Manage Extensions**, click on that. 
+4. Near the top left, should say **Load Unpacked**, click on that and a windows explorer window should pop up 
+5. Within the context of folder of where you cloned the files at [2.](../../EpicAdvice), go to “./frontend/extension” and click it. 
+6. Go to the same folder of [2.] in windows explorer and right click. Click on **Open In Terminal** 
+7. Once the Terminal window pops up, type **"cd backend"**, **"flask –app LLM run"** respectively 
+8. Go to **uwhealth.org**, and you should see our extension working as intended, have fun. 
+
+
 ## Overview
 
 In "web portals" provided by healthcare organizations, patients are given access to more and more data, like physician and test result notes or care instructions. This is great, but the bulk of these notes are written for other healthcare professionals, and it can be difficult for patients to digest and synthesize this information to properly understand it.
