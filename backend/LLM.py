@@ -89,7 +89,7 @@ def audioResponse():
 
         sys_ins = f"""
         You summarize lab reports and medical terms in a way that is:
-        - Appropriate for a {age} year old {gender} child
+        - Appropriate for a {age} year old {gender} person
         - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
         - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
         - Using simple language suitable for a {age} year old {occupation}
@@ -147,7 +147,7 @@ def get_response():
 
     sys_ins = f"""
     You summarize lab reports and medical terms in a way that is:
-    - Appropriate for a {age} year old {gender} child
+    - Appropriate for a {age} year old {gender} person
     - Extra careful to explain concepts related to {family_member_history} in a gentle, reassuring way
     - Mindful of {nutrition} dietary considerations when discussing nutrition-related results
     - Using simple language suitable for a {age} year old {occupation}

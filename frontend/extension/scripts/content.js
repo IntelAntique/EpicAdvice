@@ -5,7 +5,7 @@ if (window) {
 
 const chatWidget = document.createElement('div');
 chatWidget.innerHTML = `
-    <div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+    <div id="chat-widget" style="position: fixed; bottom: 30px; right: 50px; z-index: 1000;">
         <button id="open-chat" class="open-chat" style="position: relative;">
             <div id="hover-text" class="hover-text" style="display: none; position: absolute; top: -34px; left: 50%; transform: translateX(-50%); background: #4a90e2; padding: 10px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); font-size: 19px; color: white; white-space: nowrap; width: auto; max-width: 300px; text-align: center;">I'm Vita, your health guide</div>
             <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="Chat" id="chat-icon" class="chat-icon" />
@@ -14,7 +14,7 @@ chatWidget.innerHTML = `
         <div id="chatWindow" class="chat-window hidden" style="display: none; flex-direction: column;">
             <!-- Chat Header -->
             <div class="chat-header" style="display: flex; align-items: center; padding: 10px; background-color: #ffffff;">
-                <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+                <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="Avatar" style="width: 37px; height: 50px; border-radius: 50%; margin-right: 10px;">
                 <p style="margin: 0; font-size: 14px; flex: 1; text-align: left;">
                     Hi! I'm Vita, your AI health guide. <br> 
                     Need help understanding something? Just ask me! <br>
@@ -81,7 +81,7 @@ chatWidget.innerHTML = `
     <!-- Chat-imessages Window -->
     <div id="chat-imessages" style="display: none; position: fixed; top: 0; right: 0; width: 50%; height: 100%; background-color: #ffffff; z-index: 1001; box-shadow: -4px 0px 8px rgba(0,0,0,0.1);">
         <div class="imessages-header" style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #ddd;">
-            <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="AI Image" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+            <img src="${chrome.runtime.getURL("images/AIPhoto.png")}" alt="AI Image" style="width: 30px; height: 40px; border-radius: 50%; margin-right: 10px;">
             <p style="font-size: 18px; margin: 0;">Chat with Vita</p>
             <button id="close-imessages" class="close-chat-button" style="margin-left: auto; background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
         </div>
@@ -122,7 +122,7 @@ document.body.appendChild(chatWidget);
 const style = document.createElement('style');
 style.innerHTML = `
 .chat-icon {
-    width: 200px;
+    width: 150px;
     height: 200px;
 }
 
@@ -422,7 +422,14 @@ document.addEventListener('mouseup', function(event) {
                 </button>
                 <button id="closeInnerPage" style="background: none; border: none; font-size: 16px; cursor: pointer; margin-left: auto;">&times;</button>
             </div>
-            <div id="responseContent" style="margin-top: 10px;">Loading response...</div>
+            <div id="responseContent" style="
+                margin-top: 10px; 
+                display: -webkit-box; 
+                -webkit-line-clamp: 5; 
+                -webkit-box-orient: vertical; 
+                overflow: hidden; 
+                text-overflow: ellipsis;
+            ">Loading response...</div>
 
             <!-- Buttons Section -->
             <div style="display: flex; align-items: center; margin-top: 20px;">
@@ -575,32 +582,29 @@ function sendAudioMessage() {
     chatContent.appendChild(audioMessage);
     chatContent.scrollTop = chatContent.scrollHeight;
 
-    // Delay execution by 10 seconds
-    setTimeout(() => {
-        fetch('http://127.0.0.1:5000/audio_response', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const aiResponse = data.response;
-            appendMessageToChatContent(aiResponse, false);
-        })
-        .catch(error => {
-            console.error('Fetch error:', error);
+    fetch('http://127.0.0.1:5000/audio_response', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const aiResponse = data.response;
+        appendMessageToChatContent(aiResponse, false);
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
 
-            // Replace the waiting message with an error message
-            waitingMessage.textContent = 'An error occurred: ' + error.message;
-            waitingMessage.classList.add('error-message');
-        });
-    }, 10000); // Delay for 10 seconds (10,000 milliseconds)
+      // Replace the waiting message with an error message
+        waitingMessage.textContent = 'An error occurred: ' + error.message;
+        waitingMessage.classList.add('error-message');
+    });
 }
 
     
