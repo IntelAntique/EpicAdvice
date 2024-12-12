@@ -10,6 +10,8 @@ There is a market gap here that our team aim to close by partnering with healthc
 Repository link: https://github.com/IntelAntique/EpicAdvice
 
 ## Setup
+Prerequisites: 
+Visual Studio Code, Python installed 
 **Install dependencies:**
     Make sure to run the command below to install the required packages:
 
@@ -51,35 +53,23 @@ Chatbots with many interactive features and simplified doctor notes are key elem
 └─README.md 
 
 ```
-
-
-
-
-Prerequisites: 
-Visual Studio Code, Python installed 
-Setup steps:
-Open up Terminal from start menu (Windows)
-Type “git clone https://github.com/IntelAntique/EpicAdvice.git”, then close terminal
-Open Google Chrome, click on , and the bottom should show Manage Extensions, click on that.
-Near the top left, should say Load Unpacked, click on that and a windows explorer window should pop up
-Within the context of folder of where you cloned the files at [2.](../../EpicAdvice), go to “./frontend/extension” and click it.
-Go to the same folder of (2.) in windows explorer and right click. Click on “Open In Terminal”
-Once the Terminal window pops up, type “cd backend”, “flask –app LLM run” respectively
-Go to uwhealth.org, and you should see our extension working as intended, have fun.
-
-
-Pseudocode of individual modules in code:
+## How it works?
+The LLM.py would start a local Flask server, who give prompt to Google Gemini model and send response back to frontend.
+In frontend, we use scirpt to modify the content and layout that appears on the webpage. Features like highlight test would render a popup text box which explains the content that user has selected, and our main feature, AI chatbox, would float at the corner of webpage. Users can type in questions and get medical information explained by gemini model. There are also various components to interact with user and collect user input to send to local server. For example, the voice input and screenshot feature. Users can take screenshot of lab test results and receive understandable analysis. For those who cannot construct meaningful text queries, voice input is also there to help them ask questions.
 
 
 What works:
 Push to talk feature on the microphone icon records your audio to be processed back with an google Gemini response
 Typing into the message bar will give back a typical response
 Click on our additional pages will present an additional page for additional information (doctor’s notes, summary, care plan)
-What doesn’t:
-Everytime the program starts we need to recreate a database
+Take Screenshot of pages would return text explanation in chat box
 
+What doesn’t:
+Everytime the program restart, we need to recreate a new database. Otherwise the local server will fail to acess database as it retrieves data.
 
 
 
 What is the next work to be done:
 Optimize database access
+Dynamic page rendering based on current patient infomation
+Gather more date so that each patient get personalized response
