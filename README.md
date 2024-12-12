@@ -1,7 +1,7 @@
 # EpicAdvice
 
 
-## Overview
+## Description
 
 In "web portals" provided by healthcare organizations, patients are given access to more and more data, like physician and test result notes or care instructions. This is great, but the bulk of these notes are written for other healthcare professionals, and it can be difficult for patients to digest and synthesize this information to properly understand it.
 
@@ -23,7 +23,7 @@ Visual Studio Code, Python installed
     pip install pyaudio keyboard numpy
 
 **GET API Key**
-https://ai.google.dev/gemini-api/docs?gad_source=1&gbraid=0AAAAACn9t64wgcFB9jX-pZ3W4st5OrY06&gclid=CjwKCAiAjeW6BhBAEiwAdKltMmXaCTRjFEaNoo_hXo6TyUFDJy2ac20Ruou3MLOIammJb2pt53MSzhoCvQ8QAvD_BwE
+[Get Google Gemini API key](https://ai.google.dev/gemini-api/docs?gad_source=1&gbraid=0AAAAACn9t64wgcFB9jX-pZ3W4st5OrY06&gclid=CjwKCAiAjeW6BhBAEiwAdKltMmXaCTRjFEaNoo_hXo6TyUFDJy2ac20Ruou3MLOIammJb2pt53MSzhoCvQ8QAvD_BwE)
 save as API_KEY.env in the `backend` folder
     
 1. Open up Terminal from start menu (Windows) 
